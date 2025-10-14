@@ -5,6 +5,7 @@ namespace TautId\Payment;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 use TautId\Payment\Abstracts\PaymentTransitionAbstract;
+use TautId\Payment\Commands\MakeTransitionsCommand;
 use TautId\Payment\Commands\PaymentDueCommand;
 
 class TautPaymentServiceProvider extends PackageServiceProvider
@@ -22,7 +23,8 @@ class TautPaymentServiceProvider extends PackageServiceProvider
             ->hasViews()
             ->hasRoute('web')
             ->hasMigration('create_taut_payments_table')
-            ->hasCommand(PaymentDueCommand::class);
+            ->hasCommand(PaymentDueCommand::class)
+            ->hasCommand(MakeTransitionsCommand::class);
     }
 
     public function boot()
@@ -35,6 +37,8 @@ class TautPaymentServiceProvider extends PackageServiceProvider
         config([
             'webhook-client.configs' => array_merge($existing, $mine['configs']),
         ]);
+
+        $this->registerTransitionBindings();
     }
 
     public function register()
@@ -45,13 +49,11 @@ class TautPaymentServiceProvider extends PackageServiceProvider
             __DIR__ . '/../config/payment-webhook-client.php',
             'webhook-client'
         );
-
-        $this->registerTransitionBindings();
     }
 
     public function registerTransitionBindings()
     {
-        $namespace = config('taut-payment.transitions_namespace', 'App\\Transitions');
+        $namespace = config('taut-payment.transitions_namespace', 'App\\Transitions\\Payment');
 
         $transitions = [
             'ToPending',

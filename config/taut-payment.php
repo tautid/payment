@@ -29,7 +29,7 @@ return [
     | Available State: ToPending, ToDue, ToCanceled, ToCompleted
     */
 
-    'transitions_namespace' => 'App\\Transitions',
+    'transitions_namespace' => 'App\\Transitions\\Payment',
 
     /*
     |--------------------------------------------------------------------------

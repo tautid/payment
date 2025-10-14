@@ -8,6 +8,6 @@ class ToCompleted extends PaymentTransitionAbstract
 {
     public function handle(\TautId\Payment\Models\Payment $record): void
     {
-        //
+        \Illuminate\Support\Facades\Log::debug('not injected');
     }
 }

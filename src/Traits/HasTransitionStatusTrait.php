@@ -40,9 +40,9 @@ trait HasTransitionStatusTrait
                 throw new Exception('Status is invanlid!');
             }
 
-            $class = new $class;
+            $instance = app($class);
 
-            $class->handle($this);
+            $instance->handle($this);
 
             DB::commit();
         } catch (Exception $e) {
