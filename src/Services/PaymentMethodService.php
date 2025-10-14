@@ -2,17 +2,17 @@
 
 namespace TautId\Payment\Services;
 
+use Illuminate\Database\RecordNotFoundException;
 use Spatie\LaravelData\DataCollection;
+use Spatie\LaravelData\PaginatedDataCollection;
+use TautId\Payment\Data\PaymentMethod\CreatePaymentMethodData;
+use TautId\Payment\Data\PaymentMethod\PaymentMethodData;
+use TautId\Payment\Data\PaymentMethod\UpdatePaymentMethodData;
+use TautId\Payment\Data\Utility\FilterPaginationData;
+use TautId\Payment\Enums\PaymentMethodTypeEnum;
+use TautId\Payment\Factories\PaymentMethodDriverFactory;
 use TautId\Payment\Models\PaymentMethod;
 use TautId\Payment\Traits\FilterServiceTrait;
-use Spatie\LaravelData\PaginatedDataCollection;
-use TautId\Payment\Enums\PaymentMethodTypeEnum;
-use Illuminate\Database\RecordNotFoundException;
-use TautId\Payment\Data\Utility\FilterPaginationData;
-use TautId\Payment\Data\PaymentMethod\PaymentMethodData;
-use TautId\Payment\Factories\PaymentMethodDriverFactory;
-use TautId\Payment\Data\PaymentMethod\CreatePaymentMethodData;
-use TautId\Payment\Data\PaymentMethod\UpdatePaymentMethodData;
 
 class PaymentMethodService
 {
@@ -32,7 +32,7 @@ class PaymentMethodService
 
         $pagination = $query->paginate($data->per_page, ['*'], 'page', $data->page);
 
-        $transformedItems = $pagination->getCollection()->map(fn($record) => PaymentMethodData::from($record));
+        $transformedItems = $pagination->getCollection()->map(fn ($record) => PaymentMethodData::from($record));
 
         $pagination->setCollection($transformedItems);
 
