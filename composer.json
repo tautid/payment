@@ -1,24 +1,27 @@
 {
-    "name": ":vendor_slug/:package_slug",
-    "description": ":package_description",
+    "name": "taut-id/payment",
+    "description": "payment starter kit package",
     "keywords": [
-        ":vendor_name",
+        "taut-id",
         "laravel",
-        ":package_slug"
+        "payment"
     ],
-    "homepage": "https://github.com/:vendor_slug/:package_slug",
+    "homepage": "https://github.com/taut-id/payment",
     "license": "MIT",
     "authors": [
         {
-            "name": ":author_name",
-            "email": "author@domain.com",
+            "name": "taut-id",
+            "email": "dev@taut.id",
             "role": "Developer"
         }
     ],
     "require": {
-        "php": "^8.4",
+        "php": "^8.3",
+        "illuminate/contracts": "^11.0||^12.0",
+        "spatie/laravel-data": "^4.17",
         "spatie/laravel-package-tools": "^1.16",
-        "illuminate/contracts": "^11.0||^12.0"
+        "spatie/laravel-settings": "^3.4",
+        "spatie/laravel-webhook-client": "^3.4"
     },
     "require-dev": {
         "laravel/pint": "^1.14",
@@ -35,13 +38,13 @@
     },
     "autoload": {
         "psr-4": {
-            "VendorName\\Skeleton\\": "src/",
-            "VendorName\\Skeleton\\Database\\Factories\\": "database/factories/"
+            "TautId\\Payment\\": "src/",
+            "TautId\\Payment\\Database\\Factories\\": "database/factories/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "VendorName\\Skeleton\\Tests\\": "tests/",
+            "TautId\\Payment\\Tests\\": "tests/",
             "Workbench\\App\\": "workbench/app/"
         }
     },
@@ -63,7 +66,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "VendorName\\Skeleton\\SkeletonServiceProvider"
+                "TautId\\Payment\\TautPaymentServiceProvider"
             ],
             "aliases": {
                 "Skeleton": "VendorName\\Skeleton\\Facades\\Skeleton"
