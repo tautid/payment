@@ -24,7 +24,7 @@ class MakeTransitionsCommand extends Command
         $fullPath = base_path($path);
 
         // Create directory if it doesn't exist
-        if (!File::exists($fullPath)) {
+        if (! File::exists($fullPath)) {
             File::makeDirectory($fullPath, 0755, true);
             $this->info("Created directory: {$path}");
         }
@@ -38,10 +38,11 @@ class MakeTransitionsCommand extends Command
 
     protected function createTransitionFile(string $className, string $fullPath, string $relativePath): void
     {
-        $filePath = $fullPath . '/' . $className . '.php';
+        $filePath = $fullPath.'/'.$className.'.php';
 
         if (File::exists($filePath)) {
             $this->warn("File already exists: {$relativePath}/{$className}.php");
+
             return;
         }
 
