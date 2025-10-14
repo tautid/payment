@@ -62,14 +62,16 @@ class PaymentService
 
     public function createPayment(CreatePaymentData $data): PaymentData
     {
-        $driver = PaymentMethodDriverFactory::getDriver($data->method->driver);
+        $method = app(PaymentMethodService::class)->getPaymentMethodById($data->method_id);
+
+        $driver = PaymentMethodDriverFactory::getDriver($method->driver);
 
         $record = Payment::create([
             'trx_id' => uniqid('PYM-'),
-            'method_id' => $data->method->id,
+            'method_id' => $method->id,
             'source_id' => $data->source->id,
             'source_type' => get_class($data->source),
-            'method_name' => $data->method->name,
+            'method_name' => $method->name,
             'customer_name' => $data->customer_name,
             'customer_phone' => $data->customer_phone,
             'customer_email' => $data->customer_email,

@@ -8,9 +8,8 @@ return [
     |
     | List of all drivers supported by this package.
     |
-    | Supported: moota, moota-transaction
+    | Supported: moota-transaction
     |
-    | * [moota] : Only handle transaction validation from bank transfer.
     | * [moota-transaction] : handle transaction validation also create
     |                         checkout in moota and able to use VA and QRIS.
     */

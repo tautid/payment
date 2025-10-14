@@ -11,7 +11,7 @@ class CreatePaymentData extends Data
 {
     public function __construct(
         public Model $source,
-        public PaymentMethodData $method,
+        public string $method_id,
         public string $customer_name,
         public ?string $customer_email,
         public ?string $customer_phone,
