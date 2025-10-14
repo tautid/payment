@@ -3,9 +3,9 @@
 namespace TautId\Payment\Factories\PaymentMethodDrivers;
 
 use Illuminate\Support\Facades\Http;
-use TautId\Payment\Services\PaymentService;
-use TautId\Payment\Data\Payment\PaymentData;
 use TautId\Payment\Abstracts\PaymentMethodDriverAbstract;
+use TautId\Payment\Data\Payment\PaymentData;
+use TautId\Payment\Services\PaymentService;
 
 class MootaTransactionDriver extends PaymentMethodDriverAbstract
 {
@@ -16,7 +16,7 @@ class MootaTransactionDriver extends PaymentMethodDriverAbstract
         $this->has_unique_code = true;
     }
 
-    private function getToken() : ?string
+    private function getToken(): ?string
     {
         return config('taut-payment.moota_transaction_api_token');
     }
@@ -28,46 +28,43 @@ class MootaTransactionDriver extends PaymentMethodDriverAbstract
 
     public function channels(): array
     {
-        try{
-            if(empty($this->getToken()))
-            {
+        try {
+            if (empty($this->getToken())) {
                 throw new \Exception('Unable to process because token is not initialize');
             }
 
             $response = Http::withHeaders([
-                            'Accept' => 'application/json'
-                        ])->withToken($this->getToken())
-                        ->get($this->getUrl('accounts/index?per_page=50'));
+                'Accept' => 'application/json',
+            ])->withToken($this->getToken())
+                ->get($this->getUrl('accounts/index?per_page=50'));
 
-            if(!$response->successful())
-            {
+            if (! $response->successful()) {
                 throw new \Exception($response->json('message'));
             }
 
             $options = $response->collect('data')
-                                ->mapWithKeys(function($data){
-                                    $bank_id = data_get($data,'bank_id');
-                                    $username = data_get($data,'username');
+                ->mapWithKeys(function ($data) {
+                    $bank_id = data_get($data, 'bank_id');
+                    $username = data_get($data, 'username');
 
-                                    return [$bank_id => $username];
-                                });
+                    return [$bank_id => $username];
+                });
 
             return $options->toArray();
-        }catch(\Exception $e){
+        } catch (\Exception $e) {
             return [];
         }
     }
 
     public function createPayment(PaymentData $data): void
     {
-        if(empty($this->getToken()))
-        {
+        if (empty($this->getToken())) {
             throw new \Exception('Unable to process because token is not initialize');
         }
 
         $payload = [
             'order_id' => $data->trx_id,
-            'bank_account_id' => data_get($data->method->meta,'moota_bank_id'),
+            'bank_account_id' => data_get($data->method->meta, 'moota_bank_id'),
             'customers' => [
                 'name' => $data->customer_name,
                 'email' => $data->customer_email,
@@ -78,28 +75,27 @@ class MootaTransactionDriver extends PaymentMethodDriverAbstract
                     'name' => "Payment #{$data->trx_id}",
                     'description' => null,
                     'qty' => 1,
-                    'price' => $data->total
-                ]
+                    'price' => $data->total,
+                ],
             ],
             'description' => null,
             'note' => null,
             'redirect_url' => route('webhook-client-moota-taut'),
             'expired_in_minutes' => now()->diffInMinutes($data->due_at),
-            'total' => $data->total
+            'total' => $data->total,
         ];
 
         $response = Http::withHeaders([
-                        'Accept' => 'application/json'
-                    ])->withToken($this->getToken())
-                    ->post($this->getUrl('create-transaction'),$payload);
+            'Accept' => 'application/json',
+        ])->withToken($this->getToken())
+            ->post($this->getUrl('create-transaction'), $payload);
 
-        if(!$response->successful())
-        {
+        if (! $response->successful()) {
             throw new \Exception($response->json('message'));
         }
 
-        app(PaymentService::class)->updatePaymentPayload($data->id,$payload);
-        app(PaymentService::class)->updatePaymentResponse($data->id,$response->collect()->toArray());
+        app(PaymentService::class)->updatePaymentPayload($data->id, $payload);
+        app(PaymentService::class)->updatePaymentResponse($data->id, $response->collect()->toArray());
     }
 
     public function checkPayment(PaymentData $data): void
@@ -114,7 +110,8 @@ class MootaTransactionDriver extends PaymentMethodDriverAbstract
 
     public function metaValidation(array $meta): void
     {
-        if(empty(data_get($meta,'moota_bank_id')))
+        if (empty(data_get($meta, 'moota_bank_id'))) {
             throw new \Exception('moota_bank_id is required');
+        }
     }
 }

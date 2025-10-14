@@ -10,8 +10,8 @@ enum PaymentStatusEnum: string
     case Canceled = 'canceled';
     case Completed = 'completed';
 
-    public static function toArray() : array
+    public static function toArray(): array
     {
-        return collect(self::cases())->pluck('name','value')->toArray();
+        return collect(self::cases())->pluck('name', 'value')->toArray();
     }
 }

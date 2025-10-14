@@ -6,5 +6,5 @@ use TautId\Payment\Models\Payment;
 
 abstract class PaymentTransitionAbstract
 {
-    abstract function handle(Payment $record): void;
+    abstract public function handle(Payment $record): void;
 }

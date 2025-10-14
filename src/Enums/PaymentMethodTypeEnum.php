@@ -7,8 +7,8 @@ enum PaymentMethodTypeEnum: string
     case Sandbox = 'sandbox';
     case Production = 'production';
 
-    public static function toArray() : array
+    public static function toArray(): array
     {
-        return collect(self::cases())->pluck('name','value')->toArray();
+        return collect(self::cases())->pluck('name', 'value')->toArray();
     }
 }

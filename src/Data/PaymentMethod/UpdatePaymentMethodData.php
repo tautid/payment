@@ -12,8 +12,5 @@ class UpdatePaymentMethodData extends Data
         public string $driver,
         public string $type,
         public ?array $meta
-    )
-    {
-
-    }
+    ) {}
 }

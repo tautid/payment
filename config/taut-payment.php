@@ -16,9 +16,8 @@ return [
     */
 
     'drivers' => [
-        'moota-transaction'
+        'moota-transaction',
     ],
-
 
     /*
     |--------------------------------------------------------------------------
@@ -42,5 +41,5 @@ return [
     */
 
     'moota_transaction_api_token' => null,
-    'moota_transaction_webhook_secret' => null
+    'moota_transaction_webhook_secret' => null,
 ];

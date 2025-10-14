@@ -2,13 +2,13 @@
 
 namespace TautId\Payment\Services;
 
-use TautId\Payment\Models\Payment;
-use Spatie\LaravelData\DataCollection;
-use TautId\Payment\Enums\PaymentStatusEnum;
-use TautId\Payment\Data\Payment\PaymentData;
 use Illuminate\Database\RecordNotFoundException;
+use Spatie\LaravelData\DataCollection;
 use TautId\Payment\Data\Payment\CreatePaymentData;
+use TautId\Payment\Data\Payment\PaymentData;
+use TautId\Payment\Enums\PaymentStatusEnum;
 use TautId\Payment\Factories\PaymentMethodDriverFactory;
+use TautId\Payment\Models\Payment;
 
 class PaymentService
 {
@@ -16,7 +16,7 @@ class PaymentService
     {
         return new DataCollection(
             PaymentData::class,
-            Payment::get()->map(fn($record) => PaymentData::from($record))
+            Payment::get()->map(fn ($record) => PaymentData::from($record))
         );
     }
 
@@ -24,18 +24,20 @@ class PaymentService
     {
         $record = Payment::find($payment_id);
 
-        if(empty($record))
+        if (empty($record)) {
             throw new RecordNotFoundException('Payment not found');
+        }
 
         return PaymentData::from($record);
     }
 
     public function getPaymentByTrxId(string $payment_trx_id): PaymentData
     {
-        $record = Payment::where('trx_id',$payment_trx_id)->first();
+        $record = Payment::where('trx_id', $payment_trx_id)->first();
 
-        if(empty($record))
+        if (empty($record)) {
             throw new RecordNotFoundException('Payment not found');
+        }
 
         return PaymentData::from($record);
     }
@@ -57,7 +59,7 @@ class PaymentService
             'amount' => $data->amount,
             'total' => $data->amount,
             'date' => $data->date,
-            'due_at' => $data->due_at
+            'due_at' => $data->due_at,
         ]);
 
         $record->update(['status' => PaymentStatusEnum::Pending->value]);
@@ -73,14 +75,16 @@ class PaymentService
     {
         $record = Payment::find($payment_id);
 
-        if(empty($record))
+        if (empty($record)) {
             throw new RecordNotFoundException('Payment not found');
+        }
 
-        if($record->status != PaymentStatusEnum::Pending->value)
+        if ($record->status != PaymentStatusEnum::Pending->value) {
             throw new \InvalidArgumentException('This current payment status is not pending');
+        }
 
         $record->update([
-            'status' => PaymentStatusEnum::Due->value
+            'status' => PaymentStatusEnum::Due->value,
         ]);
     }
 
@@ -88,15 +92,17 @@ class PaymentService
     {
         $record = Payment::find($payment_id);
 
-        if(empty($record))
+        if (empty($record)) {
             throw new RecordNotFoundException('Payment not found');
+        }
 
-        if($record->status != PaymentStatusEnum::Pending->value)
+        if ($record->status != PaymentStatusEnum::Pending->value) {
             throw new \InvalidArgumentException('This current payment status is not pending');
+        }
 
         $record->update([
             'completed_at' => now(),
-            'status' => PaymentStatusEnum::Completed->value
+            'status' => PaymentStatusEnum::Completed->value,
         ]);
     }
 
@@ -104,14 +110,16 @@ class PaymentService
     {
         $record = Payment::find($payment_id);
 
-        if(empty($record))
+        if (empty($record)) {
             throw new RecordNotFoundException('Payment not found');
+        }
 
-        if($record->status != PaymentStatusEnum::Pending->value)
+        if ($record->status != PaymentStatusEnum::Pending->value) {
             throw new \InvalidArgumentException('This current payment status is not pending');
+        }
 
         $record->update([
-            'status' => PaymentStatusEnum::Canceled->value
+            'status' => PaymentStatusEnum::Canceled->value,
         ]);
     }
 
@@ -119,11 +127,12 @@ class PaymentService
     {
         $record = Payment::find($payment_id);
 
-        if(empty($record))
+        if (empty($record)) {
             throw new RecordNotFoundException('Payment not found');
+        }
 
         $record->update([
-            'payload' => $payload
+            'payload' => $payload,
         ]);
     }
 
@@ -131,11 +140,12 @@ class PaymentService
     {
         $record = Payment::find($payment_id);
 
-        if(empty($record))
+        if (empty($record)) {
             throw new RecordNotFoundException('Payment not found');
+        }
 
         $record->update([
-            'response' => $response
+            'response' => $response,
         ]);
     }
 }
