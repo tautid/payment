@@ -2,10 +2,9 @@
 
 namespace TautId\Payment\Data\Utility;
 
-use Spatie\LaravelData\Data;
-use Spatie\LaravelData\Optional;
-use Spatie\LaravelData\DataCollection;
 use Spatie\LaravelData\Attributes\DataCollectionOf;
+use Spatie\LaravelData\Data;
+use Spatie\LaravelData\DataCollection;
 
 class FilterPaginationData extends Data
 {
@@ -18,8 +17,7 @@ class FilterPaginationData extends Data
         public ?string $sortDirection = 'asc',
         public ?array $searchable = [],
         public ?string $searchTerm = '',
-    )
-    {
+    ) {
         // Ensure defaults are properly set
         $this->page = $this->page ?? 1;
         $this->per_page = $this->per_page ?? 10;

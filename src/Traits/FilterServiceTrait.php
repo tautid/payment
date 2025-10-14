@@ -2,8 +2,8 @@
 
 namespace TautId\Payment\Traits;
 
-use InvalidArgumentException;
 use Illuminate\Database\Eloquent\Builder;
+use InvalidArgumentException;
 use TautId\Payment\Data\Utility\FilterPaginationData;
 
 trait FilterServiceTrait
@@ -11,9 +11,6 @@ trait FilterServiceTrait
     /**
      * Build a filtered query based on the provided filter data
      *
-     * @param string $modelClass
-     * @param FilterPaginationData $filters
-     * @return Builder
      * @throws InvalidArgumentException
      */
     public function filteredQuery(string $modelClass, FilterPaginationData $filters): Builder
@@ -28,7 +25,7 @@ trait FilterServiceTrait
             }
         }
 
-        if (!empty($filters->searchable) && !empty($filters->searchTerm)) {
+        if (! empty($filters->searchable) && ! empty($filters->searchTerm)) {
             $this->applySearch($query, $filters->searchable, $filters->searchTerm);
         }
 
@@ -38,12 +35,11 @@ trait FilterServiceTrait
     /**
      * Validate filter data
      *
-     * @param FilterPaginationData $filters
      * @throws InvalidArgumentException
      */
     private function validateFilterData(FilterPaginationData $filters): void
     {
-        if (!in_array(strtolower($filters->sortDirection), ['asc', 'desc'])) {
+        if (! in_array(strtolower($filters->sortDirection), ['asc', 'desc'])) {
             throw new InvalidArgumentException('Sort direction must be either "asc" or "desc"');
         }
 
@@ -62,10 +58,6 @@ trait FilterServiceTrait
 
     /**
      * Apply a single filter to the query
-     *
-     * @param Builder $query
-     * @param string $column
-     * @param mixed $value
      */
     private function applyFilter(Builder $query, string $column, mixed $value): void
     {
@@ -93,10 +85,6 @@ trait FilterServiceTrait
 
     /**
      * Apply search functionality across searchable fields
-     *
-     * @param Builder $query
-     * @param array $searchableFields
-     * @param string $searchTerm
      */
     private function applySearch(Builder $query, array $searchableFields, string $searchTerm): void
     {

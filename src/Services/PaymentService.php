@@ -31,7 +31,7 @@ class PaymentService
 
         $pagination = $query->paginate($data->per_page, ['*'], 'page', $data->page);
 
-        $transformedItems = $pagination->getCollection()->map(fn($record) => PaymentData::from($record));
+        $transformedItems = $pagination->getCollection()->map(fn ($record) => PaymentData::from($record));
 
         $pagination->setCollection($transformedItems);
 
