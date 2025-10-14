@@ -2,23 +2,41 @@
 
 namespace TautId\Payment\Services;
 
-use Illuminate\Database\RecordNotFoundException;
 use Spatie\LaravelData\DataCollection;
-use TautId\Payment\Data\PaymentMethod\CreatePaymentMethodData;
-use TautId\Payment\Data\PaymentMethod\PaymentMethodData;
-use TautId\Payment\Data\PaymentMethod\UpdatePaymentMethodData;
-use TautId\Payment\Enums\PaymentMethodTypeEnum;
-use TautId\Payment\Factories\PaymentMethodDriverFactory;
 use TautId\Payment\Models\PaymentMethod;
+use TautId\Payment\Traits\FilterServiceTrait;
+use Spatie\LaravelData\PaginatedDataCollection;
+use TautId\Payment\Enums\PaymentMethodTypeEnum;
+use Illuminate\Database\RecordNotFoundException;
+use TautId\Payment\Data\Utility\FilterPaginationData;
+use TautId\Payment\Data\PaymentMethod\PaymentMethodData;
+use TautId\Payment\Factories\PaymentMethodDriverFactory;
+use TautId\Payment\Data\PaymentMethod\CreatePaymentMethodData;
+use TautId\Payment\Data\PaymentMethod\UpdatePaymentMethodData;
 
 class PaymentMethodService
 {
+    use FilterServiceTrait;
+
     public function getAllPaymentMethods(): DataCollection
     {
         return new DataCollection(
             PaymentMethodData::class,
             PaymentMethod::get()->map(fn ($record) => PaymentMethodData::from($record))
         );
+    }
+
+    public function getPaginatePaymentMethods(FilterPaginationData $data): PaginatedDataCollection
+    {
+        $query = $this->filteredQuery(PaymentMethod::class, $data);
+
+        $pagination = $query->paginate($data->per_page, ['*'], 'page', $data->page);
+
+        $transformedItems = $pagination->getCollection()->map(fn($record) => PaymentMethodData::from($record));
+
+        $pagination->setCollection($transformedItems);
+
+        return new PaginatedDataCollection(PaymentMethodData::class, $pagination);
     }
 
     public function getPaymentMethodById(string $method_id): PaymentMethodData
@@ -97,20 +115,7 @@ class PaymentMethodService
         return PaymentMethodData::from($record);
     }
 
-    public function PaymentMethodActivate(string $method_id): void
-    {
-        $record = PaymentMethod::find($method_id);
-
-        if (empty($record)) {
-            throw new RecordNotFoundException('Payment method not found');
-        }
-
-        $record->update([
-            'is_active' => false,
-        ]);
-    }
-
-    public function PaymentMethodInactivate(string $method_id): void
+    public function activatePaymentMethod(string $method_id): void
     {
         $record = PaymentMethod::find($method_id);
 
@@ -120,6 +125,19 @@ class PaymentMethodService
 
         $record->update([
             'is_active' => true,
+        ]);
+    }
+
+    public function deactivatePaymentMethod(string $method_id): void
+    {
+        $record = PaymentMethod::find($method_id);
+
+        if (empty($record)) {
+            throw new RecordNotFoundException('Payment method not found');
+        }
+
+        $record->update([
+            'is_active' => false,
         ]);
     }
 }

@@ -4,20 +4,38 @@ namespace TautId\Payment\Services;
 
 use Illuminate\Database\RecordNotFoundException;
 use Spatie\LaravelData\DataCollection;
+use Spatie\LaravelData\PaginatedDataCollection;
 use TautId\Payment\Data\Payment\CreatePaymentData;
 use TautId\Payment\Data\Payment\PaymentData;
+use TautId\Payment\Data\Utility\FilterPaginationData;
 use TautId\Payment\Enums\PaymentStatusEnum;
 use TautId\Payment\Factories\PaymentMethodDriverFactory;
 use TautId\Payment\Models\Payment;
+use TautId\Payment\Traits\FilterServiceTrait;
 
 class PaymentService
 {
+    use FilterServiceTrait;
+
     public function getAllPayments(): DataCollection
     {
         return new DataCollection(
             PaymentData::class,
             Payment::get()->map(fn ($record) => PaymentData::from($record))
         );
+    }
+
+    public function getPaginatedPayments(FilterPaginationData $data): PaginatedDataCollection
+    {
+        $query = $this->filteredQuery(Payment::class, $data);
+
+        $pagination = $query->paginate($data->per_page, ['*'], 'page', $data->page);
+
+        $transformedItems = $pagination->getCollection()->map(fn($record) => PaymentData::from($record));
+
+        $pagination->setCollection($transformedItems);
+
+        return new PaginatedDataCollection(PaymentData::class, $pagination);
     }
 
     public function getPaymentById(string $payment_id): PaymentData
