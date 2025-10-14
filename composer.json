@@ -1,16 +1,16 @@
 {
-    "name": "taut-id/payment",
+    "name": "tautid/payment",
     "description": "payment starter kit package",
     "keywords": [
-        "taut-id",
+        "tautid",
         "laravel",
         "payment"
     ],
-    "homepage": "https://github.com/taut-id/payment",
+    "homepage": "https://github.com/tautid/payment",
     "license": "MIT",
     "authors": [
         {
-            "name": "taut-id",
+            "name": "tautid",
             "email": "dev@taut.id",
             "role": "Developer"
         }

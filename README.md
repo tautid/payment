@@ -7,7 +7,7 @@ A Laravel package for handling payment transactions with customizable state tran
 You can install the package via composer:
 
 ```bash
-composer require taut-id/payment
+composer require tautid/payment
 ```
 
 Publish the configuration file:
