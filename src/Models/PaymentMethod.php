@@ -16,6 +16,6 @@ class PaymentMethod extends Model
     protected $casts = [
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
-        'meta' => 'array'
+        'meta' => 'array',
     ];
 }

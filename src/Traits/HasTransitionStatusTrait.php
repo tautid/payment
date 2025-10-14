@@ -14,7 +14,7 @@ trait HasTransitionStatusTrait
      */
     public static function bootHasTransitionStatusTrait(): void
     {
-        static::updating(function (self $model){
+        static::updating(function (self $model) {
             $model->statusTransform();
         });
     }
@@ -26,28 +26,26 @@ trait HasTransitionStatusTrait
 
     private function statusTransform()
     {
-        if(!$this->isDirty('status'))
-        {
+        if (! $this->isDirty('status')) {
             return;
         }
 
-        try{
+        try {
             DB::beginTransaction();
 
             $states = $this->getStatesConfigs();
-            $class = data_get($states,$this->status,null);
+            $class = data_get($states, $this->status, null);
 
-            if(empty($class))
-            {
+            if (empty($class)) {
                 throw new Exception('Status is invanlid!');
             }
 
-            $class = new $class();
+            $class = new $class;
 
             $class->handle($this);
 
             DB::commit();
-        }catch(Exception $e){
+        } catch (Exception $e) {
             DB::rollBack();
 
             throw new Exception($e->getMessage());

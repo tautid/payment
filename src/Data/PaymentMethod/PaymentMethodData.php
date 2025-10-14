@@ -16,8 +16,7 @@ class PaymentMethodData extends Data
         public bool $is_active,
         public ?array $meta,
         public Carbon $created_at
-    )
-    {
+    ) {
         //
     }
 

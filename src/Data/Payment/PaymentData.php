@@ -3,10 +3,10 @@
 namespace TautId\Payment\Data\Payment;
 
 use Carbon\Carbon;
-use Spatie\LaravelData\Data;
-use TautId\Payment\Models\Payment;
 use Illuminate\Database\Eloquent\Model;
+use Spatie\LaravelData\Data;
 use TautId\Payment\Data\PaymentMethod\PaymentMethodData;
+use TautId\Payment\Models\Payment;
 
 class PaymentData extends Data
 {
@@ -25,10 +25,7 @@ class PaymentData extends Data
         public Carbon $due_at,
         public ?Carbon $completed_at,
         public Carbon $created_at
-    )
-    {
-
-    }
+    ) {}
 
     public static function fromModel(Payment $record): self
     {

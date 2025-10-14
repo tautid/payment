@@ -3,9 +3,9 @@
 namespace TautId\Payment\Supports;
 
 use Illuminate\Http\Request;
-use Spatie\WebhookClient\WebhookConfig;
 use Spatie\WebhookClient\Exceptions\InvalidConfig;
 use Spatie\WebhookClient\SignatureValidator\SignatureValidator;
+use Spatie\WebhookClient\WebhookConfig;
 
 class MootaTransactionSignatureValidator implements SignatureValidator
 {

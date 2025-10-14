@@ -2,14 +2,14 @@
 
 namespace TautId\Payment\Services;
 
-use Spatie\LaravelData\DataCollection;
-use TautId\Payment\Models\PaymentMethod;
-use TautId\Payment\Enums\PaymentMethodTypeEnum;
 use Illuminate\Database\RecordNotFoundException;
-use TautId\Payment\Data\PaymentMethod\PaymentMethodData;
-use TautId\Payment\Factories\PaymentMethodDriverFactory;
+use Spatie\LaravelData\DataCollection;
 use TautId\Payment\Data\PaymentMethod\CreatePaymentMethodData;
+use TautId\Payment\Data\PaymentMethod\PaymentMethodData;
 use TautId\Payment\Data\PaymentMethod\UpdatePaymentMethodData;
+use TautId\Payment\Enums\PaymentMethodTypeEnum;
+use TautId\Payment\Factories\PaymentMethodDriverFactory;
+use TautId\Payment\Models\PaymentMethod;
 
 class PaymentMethodService
 {
@@ -17,7 +17,7 @@ class PaymentMethodService
     {
         return new DataCollection(
             PaymentMethodData::class,
-            PaymentMethod::get()->map(fn($record) => PaymentMethodData::from($record))
+            PaymentMethod::get()->map(fn ($record) => PaymentMethodData::from($record))
         );
     }
 
@@ -25,8 +25,9 @@ class PaymentMethodService
     {
         $record = PaymentMethod::find($method_id);
 
-        if(empty($record))
+        if (empty($record)) {
             throw new RecordNotFoundException('Payment method not found');
+        }
 
         return PaymentMethodData::from($record);
     }
@@ -47,11 +48,13 @@ class PaymentMethodService
     {
         $drivers = PaymentMethodDriverFactory::getOptions();
 
-        if(!in_array(strtolower($data->driver),$drivers))
+        if (! in_array(strtolower($data->driver), $drivers)) {
             throw new \InvalidArgumentException('Invalid driver');
+        }
 
-        if(!in_array($data->type,PaymentMethodTypeEnum::toArray()))
+        if (! in_array($data->type, PaymentMethodTypeEnum::toArray())) {
             throw new \InvalidArgumentException('Invalid type');
+        }
 
         $driver = PaymentMethodDriverFactory::getDriver($data->driver);
 
@@ -62,7 +65,7 @@ class PaymentMethodService
             'driver' => strtolower($data->driver),
             'type' => $data->type,
             'is_active' => true,
-            'meta' => $data->meta
+            'meta' => $data->meta,
         ]);
 
         return PaymentMethodData::from($record);
@@ -72,11 +75,13 @@ class PaymentMethodService
     {
         $record = PaymentMethod::find($data->id);
 
-        if(empty($record))
+        if (empty($record)) {
             throw new RecordNotFoundException('Payment method not found');
+        }
 
-        if(!in_array($data->type,PaymentMethodTypeEnum::toArray()))
+        if (! in_array($data->type, PaymentMethodTypeEnum::toArray())) {
             throw new \InvalidArgumentException('Invalid type');
+        }
 
         $driver = PaymentMethodDriverFactory::getDriver($data->driver);
 
@@ -86,8 +91,9 @@ class PaymentMethodService
             'name' => $data->name,
             'driver' => strtolower($data->driver),
             'type' => $data->type,
-            'meta' => $data->meta
+            'meta' => $data->meta,
         ]);
+
         return PaymentMethodData::from($record);
     }
 
@@ -95,11 +101,12 @@ class PaymentMethodService
     {
         $record = PaymentMethod::find($method_id);
 
-        if(empty($record))
+        if (empty($record)) {
             throw new RecordNotFoundException('Payment method not found');
+        }
 
         $record->update([
-            'is_active' => false
+            'is_active' => false,
         ]);
     }
 
@@ -107,11 +114,12 @@ class PaymentMethodService
     {
         $record = PaymentMethod::find($method_id);
 
-        if(empty($record))
+        if (empty($record)) {
             throw new RecordNotFoundException('Payment method not found');
+        }
 
         $record->update([
-            'is_active' => true
+            'is_active' => true,
         ]);
     }
 }

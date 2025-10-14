@@ -3,9 +3,9 @@
 namespace TautId\Payment;
 
 use Spatie\LaravelPackageTools\Package;
-use TautId\Payment\Commands\PaymentDueCommand;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 use TautId\Payment\Abstracts\PaymentTransitionAbstract;
+use TautId\Payment\Commands\PaymentDueCommand;
 
 class TautPaymentServiceProvider extends PackageServiceProvider
 {
