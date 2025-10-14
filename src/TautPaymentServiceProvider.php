@@ -30,7 +30,7 @@ class TautPaymentServiceProvider extends PackageServiceProvider
         parent::boot();
 
         $existing = config('webhook-client.configs', []);
-        $mine = require __DIR__ . '/../config/payment-webhook-client.php';
+        $mine = require __DIR__.'/../config/payment-webhook-client.php';
 
         config([
             'webhook-client.configs' => array_merge($existing, $mine['configs']),
@@ -42,7 +42,7 @@ class TautPaymentServiceProvider extends PackageServiceProvider
         parent::register();
 
         $this->mergeConfigFrom(
-            __DIR__ . '/../config/payment-webhook-client.php',
+            __DIR__.'/../config/payment-webhook-client.php',
             'webhook-client'
         );
 
