@@ -29,20 +29,22 @@ class TautPaymentServiceProvider extends PackageServiceProvider
     {
         parent::boot();
 
-        $this->mergeConfigFrom(__DIR__.'./../config/payment-webhook-client.php', 'webhook-client');
+        $existing = config('webhook-client.configs', []);
+        $mine = require __DIR__ . '/../config/payment-webhook-client.php';
 
-        // if (!Schema::hasTable('settings')) {
-        //     throw new RuntimeException(
-        //         "The 'settings' table was not found. Please run:\n".
-        //         "php artisan vendor:publish --tag=settings-migrations\n".
-        //         "php artisan migrate"
-        //     );
-        // }
+        config([
+            'webhook-client.configs' => array_merge($existing, $mine['configs']),
+        ]);
     }
 
     public function register()
     {
         parent::register();
+
+        $this->mergeConfigFrom(
+            __DIR__ . '/../config/payment-webhook-client.php',
+            'webhook-client'
+        );
 
         $this->registerTransitionBindings();
     }
