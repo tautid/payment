@@ -69,7 +69,7 @@
                 "TautId\\Payment\\TautPaymentServiceProvider"
             ],
             "aliases": {
-                "Skeleton": "VendorName\\Skeleton\\Facades\\Skeleton"
+                "TautPayment": "TautId\\Payment\\Facades\\TautPayment"
             }
         }
     },
