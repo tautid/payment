@@ -90,12 +90,13 @@ class MootaTransactionDriver extends PaymentMethodDriverAbstract
         ])->withToken($this->getToken())
             ->post($this->getUrl('create-transaction'), $payload);
 
+        app(PaymentService::class)->updatePaymentPayload($data->id, $payload);
+        app(PaymentService::class)->updatePaymentResponse($data->id, $response->collect()->toArray());
+
         if (! $response->successful()) {
             throw new \Exception($response->json('message'));
         }
 
-        app(PaymentService::class)->updatePaymentPayload($data->id, $payload);
-        app(PaymentService::class)->updatePaymentResponse($data->id, $response->collect()->toArray());
     }
 
     public function checkPayment(PaymentData $data): void
