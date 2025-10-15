@@ -5,7 +5,6 @@ namespace TautId\Payment\Data\Payment;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\LaravelData\Data;
-use TautId\Payment\Data\PaymentMethod\PaymentMethodData;
 
 class CreatePaymentData extends Data
 {
