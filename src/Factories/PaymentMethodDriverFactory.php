@@ -18,7 +18,7 @@ class PaymentMethodDriverFactory
             throw new \Exception('Driver not found');
         }
 
-        if (! in_array($driverName, config('taut-payment.drivers'))) {
+        if (! in_array(strtolower($driverName), config('taut-payment.drivers'))) {
             throw new \Exception("{$driverName} is disabled from config");
         }
 
