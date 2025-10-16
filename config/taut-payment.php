@@ -37,6 +37,7 @@ return [
     |
     | All required credentials
     |
+    | note: replace using env() for safety
     */
 
     'moota_transaction_api_token' => null,
