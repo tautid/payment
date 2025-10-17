@@ -22,7 +22,7 @@ class PaymentMethodSeeder extends Seeder
                     'description' => 'Cash payment method for offline transactions',
                     'channels' => ['cash'],
                     'instructions' => 'Please pay with cash at the counter',
-                ]
+                ],
             ],
             [
                 'name' => 'Cash Payment (Sandbox)',
@@ -33,7 +33,7 @@ class PaymentMethodSeeder extends Seeder
                     'description' => 'Cash payment method for testing purposes',
                     'channels' => ['cash'],
                     'instructions' => 'Test cash payment method',
-                ]
+                ],
             ],
         ];
 

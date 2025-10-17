@@ -3,8 +3,8 @@
 namespace TautId\Payment\Factories;
 
 use TautId\Payment\Abstracts\PaymentMethodDriverAbstract;
-use TautId\Payment\Factories\PaymentMethodDrivers\OfflineDriver;
 use TautId\Payment\Factories\PaymentMethodDrivers\MootaTransactionDriver;
+use TautId\Payment\Factories\PaymentMethodDrivers\OfflineDriver;
 
 class PaymentMethodDriverFactory
 {
@@ -16,11 +16,13 @@ class PaymentMethodDriverFactory
             default => null
         };
 
-        if (empty($driver))
+        if (empty($driver)) {
             throw new \Exception('Driver not found');
+        }
 
-        if (! in_array(strtolower($driverName), config('taut-payment.drivers')))
+        if (! in_array(strtolower($driverName), config('taut-payment.drivers'))) {
             throw new \Exception("{$driverName} is disabled from config");
+        }
 
         return $driver;
     }

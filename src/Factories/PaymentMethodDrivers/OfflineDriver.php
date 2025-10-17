@@ -10,7 +10,7 @@ class OfflineDriver extends PaymentMethodDriverAbstract
     public function channels(): array
     {
         return [
-            'cash'
+            'cash',
         ];
     }
 
