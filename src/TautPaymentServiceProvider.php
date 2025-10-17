@@ -39,6 +39,13 @@ class TautPaymentServiceProvider extends PackageServiceProvider
         ]);
 
         $this->registerTransitionBindings();
+
+        // Publish seeders
+        if ($this->app->runningInConsole()) {
+            $this->publishes([
+                __DIR__.'/../database/seeders/' => database_path('seeders/'),
+            ], 'taut-payment-seeders');
+        }
     }
 
     public function register()

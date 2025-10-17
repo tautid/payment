@@ -16,6 +16,12 @@ Publish the configuration file:
 php artisan vendor:publish --tag="taut-payment-config"
 ```
 
+Publish the configuration file:
+
+```bash
+php artisan vendor:publish --tag="taut-payment-seeders"
+```
+
 Publish the webhook client migrations:
 
 ```bash

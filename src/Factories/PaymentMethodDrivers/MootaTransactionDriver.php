@@ -11,11 +11,6 @@ class MootaTransactionDriver extends PaymentMethodDriverAbstract
 {
     private string $base_url = 'https://app.moota.co/api/v2/';
 
-    public function __construct()
-    {
-        $this->has_unique_code = true;
-    }
-
     private function getToken(): ?string
     {
         return config('taut-payment.moota_transaction_api_token');

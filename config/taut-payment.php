@@ -12,10 +12,12 @@ return [
     |
     | * [moota-transaction] : handle transaction validation also create
     |                         checkout in moota and able to use VA and QRIS.
+    | * [offline] : offline payment such as cash
     */
 
     'drivers' => [
         'moota-transaction',
+        'offline',
     ],
 
     /*
