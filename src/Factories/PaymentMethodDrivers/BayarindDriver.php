@@ -2,6 +2,7 @@
 
 namespace TautId\Payment\Factories\PaymentMethodDrivers;
 
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use TautId\Payment\Services\PaymentService;
@@ -97,9 +98,13 @@ class BayarindDriver extends PaymentMethodDriverAbstract
 
         if($response->json('insertStatus') != "00")
         {
-            dd($response->json(),$payload);
             throw new \Exception($response->json('insertMessage'));
         }
+
+        app(PaymentService::class)->updateDueAt(
+            $data->id,
+            Carbon::parse(data_get($payload,'transactionExpire'))
+        );
     }
 
     private function handlingShopeepay(PaymentData $data): array
