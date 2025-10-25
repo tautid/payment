@@ -18,7 +18,7 @@ return [
     'drivers' => [
         'moota-transaction',
         'offline',
-        'bayarind'
+        'bayarind',
     ],
 
     /*

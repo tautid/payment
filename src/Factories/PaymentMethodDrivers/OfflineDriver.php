@@ -3,8 +3,8 @@
 namespace TautId\Payment\Factories\PaymentMethodDrivers;
 
 use Illuminate\Http\Request;
-use TautId\Payment\Data\Payment\PaymentData;
 use TautId\Payment\Abstracts\PaymentMethodDriverAbstract;
+use TautId\Payment\Data\Payment\PaymentData;
 
 class OfflineDriver extends PaymentMethodDriverAbstract
 {

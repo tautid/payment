@@ -54,7 +54,7 @@ class PaymentMethodService
     {
         return new DataCollection(
             PaymentMethodData::class,
-            PaymentMethod::where('driver',$driver)->get()->map(fn ($record) => PaymentMethodData::from($record))
+            PaymentMethod::where('driver', $driver)->get()->map(fn ($record) => PaymentMethodData::from($record))
         );
     }
 
@@ -74,16 +74,19 @@ class PaymentMethodService
     {
         $drivers = PaymentMethodDriverFactory::getOptions();
 
-        if (! in_array(strtolower($data->driver), array_keys($drivers)))
+        if (! in_array(strtolower($data->driver), array_keys($drivers))) {
             throw new \InvalidArgumentException('Invalid driver');
+        }
 
-        if (! in_array($data->type, array_keys(PaymentMethodTypeEnum::toArray())))
+        if (! in_array($data->type, array_keys(PaymentMethodTypeEnum::toArray()))) {
             throw new \InvalidArgumentException('Invalid type');
+        }
 
         $driver = PaymentMethodDriverFactory::getDriver($data->driver);
 
-        if (! in_array($data->service, array_keys($driver->services())))
+        if (! in_array($data->service, array_keys($driver->services()))) {
             throw new \InvalidArgumentException('Invalid service id');
+        }
 
         $driver->metaValidation($data->meta);
 
@@ -109,8 +112,9 @@ class PaymentMethodService
 
         $drivers = PaymentMethodDriverFactory::getOptions();
 
-        if (! in_array(strtolower($data->driver), array_keys($drivers)))
+        if (! in_array(strtolower($data->driver), array_keys($drivers))) {
             throw new \InvalidArgumentException('Invalid driver');
+        }
 
         if (! in_array($data->type, array_keys(PaymentMethodTypeEnum::toArray()))) {
             throw new \InvalidArgumentException('Invalid type');
@@ -118,8 +122,9 @@ class PaymentMethodService
 
         $driver = PaymentMethodDriverFactory::getDriver($data->driver);
 
-        if (! in_array($data->service, array_keys($driver->services())))
+        if (! in_array($data->service, array_keys($driver->services()))) {
             throw new \InvalidArgumentException('Invalid service id');
+        }
 
         $driver->metaValidation($data->meta);
 

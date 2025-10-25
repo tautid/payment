@@ -20,7 +20,7 @@ return [
             'webhook_profile' => \Spatie\WebhookClient\WebhookProfile\ProcessEverythingWebhookProfile::class,
             'webhook_response' => \TautId\Payment\Supports\WebhookResponse\BayarindRespondTo::class,
             'webhook_model' => \Spatie\WebhookClient\Models\WebhookCall::class,
-            'process_webhook_job' => \TautId\Payment\Jobs\BayarindWebhookReceiverJob::class
-        ]
+            'process_webhook_job' => \TautId\Payment\Jobs\BayarindWebhookReceiverJob::class,
+        ],
     ],
 ];
