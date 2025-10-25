@@ -16,7 +16,7 @@ class MakeTransitionsCommand extends Command
         'ToCompleted',
         'ToDue',
         'ToPending',
-        'ToFailed'
+        'ToFailed',
     ];
 
     public function handle()

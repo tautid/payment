@@ -3,16 +3,16 @@
 namespace TautId\Payment\Services;
 
 use Carbon\Carbon;
-use TautId\Payment\Models\Payment;
-use Spatie\LaravelData\DataCollection;
-use TautId\Payment\Enums\PaymentStatusEnum;
-use TautId\Payment\Data\Payment\PaymentData;
-use TautId\Payment\Traits\FilterServiceTrait;
-use Spatie\LaravelData\PaginatedDataCollection;
 use Illuminate\Database\RecordNotFoundException;
+use Spatie\LaravelData\DataCollection;
+use Spatie\LaravelData\PaginatedDataCollection;
 use TautId\Payment\Data\Payment\CreatePaymentData;
+use TautId\Payment\Data\Payment\PaymentData;
 use TautId\Payment\Data\Utility\FilterPaginationData;
+use TautId\Payment\Enums\PaymentStatusEnum;
 use TautId\Payment\Factories\PaymentMethodDriverFactory;
+use TautId\Payment\Models\Payment;
+use TautId\Payment\Traits\FilterServiceTrait;
 
 class PaymentService
 {
@@ -148,18 +148,21 @@ class PaymentService
     {
         $record = Payment::find($payment_id);
 
-        if (empty($record))
+        if (empty($record)) {
             throw new RecordNotFoundException('Payment not found');
+        }
 
-        if(
-            !in_array($record->status,[
+        if (
+            ! in_array($record->status, [
                 PaymentStatusEnum::Created->value,
                 PaymentStatusEnum::Pending->value,
             ])
-        ) throw new \InvalidArgumentException('This current payment status is not created or pending');
+        ) {
+            throw new \InvalidArgumentException('This current payment status is not created or pending');
+        }
 
         $record->update([
-            'status' => PaymentStatusEnum::Failed->value
+            'status' => PaymentStatusEnum::Failed->value,
         ]);
     }
 

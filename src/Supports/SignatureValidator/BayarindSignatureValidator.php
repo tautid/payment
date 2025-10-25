@@ -3,7 +3,6 @@
 namespace TautId\Payment\Supports\SignatureValidator;
 
 use Illuminate\Http\Request;
-use Spatie\WebhookClient\Exceptions\InvalidConfig;
 use Spatie\WebhookClient\SignatureValidator\SignatureValidator;
 use Spatie\WebhookClient\WebhookConfig;
 

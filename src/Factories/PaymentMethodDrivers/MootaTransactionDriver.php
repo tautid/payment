@@ -4,10 +4,10 @@ namespace TautId\Payment\Factories\PaymentMethodDrivers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
-use TautId\Payment\Services\PaymentService;
-use TautId\Payment\Data\Payment\PaymentData;
 use Spatie\WebhookClient\Exceptions\InvalidConfig;
 use TautId\Payment\Abstracts\PaymentMethodDriverAbstract;
+use TautId\Payment\Data\Payment\PaymentData;
+use TautId\Payment\Services\PaymentService;
 
 class MootaTransactionDriver extends PaymentMethodDriverAbstract
 {
@@ -55,7 +55,7 @@ class MootaTransactionDriver extends PaymentMethodDriverAbstract
 
     public function createPayment(PaymentData $data): void
     {
-        try{
+        try {
             if (empty($this->getToken())) {
                 throw new \Exception('Unable to process because token is not initialize');
             }
@@ -94,8 +94,7 @@ class MootaTransactionDriver extends PaymentMethodDriverAbstract
             if (! $response->successful()) {
                 throw new \Exception($response->json('message'));
             }
-        }catch(\Exception $e)
-        {
+        } catch (\Exception $e) {
             app(PaymentService::class)->changePaymentToFailed($data->id);
             throw new \Exception($e->getMessage());
         }
