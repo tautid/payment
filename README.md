@@ -1,10 +1,19 @@
 # Taut Payment
 
-A Laravel package for handling payment transactions with customizable state transitions and webhook integrations.
+A comprehensive Laravel package for handling payment transactions with multiple payment gateways, customizable state transitions, and webhook integrations. Built on top of Spatie Laravel Data for robust data handling and type safety.
+
+## Features
+
+- **Multiple Payment Drivers**: Support for Moota Transaction, Bayarind, and offline payment methods
+- **State Machine**: Built-in payment status transitions with customizable hooks
+- **Webhook Integration**: Automatic webhook handling for payment gateway notifications
+- **Type-Safe Data Layer**: Using Spatie Laravel Data for consistent data structures
+- **Flexible Filtering**: Advanced pagination and filtering capabilities
+- **Payment Gateway Integration**: Ready-to-use drivers for popular Indonesian payment gateways
 
 ## Installation
 
-You can install the package via composer:
+Install the package via composer:
 
 ```bash
 composer require tautid/payment
@@ -34,6 +43,8 @@ Publish the payment migrations:
 php artisan vendor:publish --tag="taut-payment-migrations"
 ```
 
+Publish the webhook client config:
+
 ```bash
 php artisan vendor:publish --provider="Spatie\WebhookClient\WebhookClientServiceProvider" --tag="webhook-client-config"
 ```
@@ -49,9 +60,52 @@ php artisan migrate
 > 
 > This step is crucial to ensure proper configuration of the webhook client for your application.
 
+## Configuration
+
+The package uses a configuration file `config/taut-payment.php` where you can configure:
+
+- **Available drivers**: Enable/disable payment drivers
+- **Transitions namespace**: Customize where transition classes are located
+- **API credentials**: Set up payment gateway credentials (use environment variables)
+
+## Core Concepts
+
+### Payment Status Flow
+
+The package uses a state machine for payment statuses:
+
+1. **Created** → **Pending** → **Completed/Due/Canceled/Failed**
+
+Available status transitions:
+- `Created`: Initial payment state
+- `Pending`: Payment awaiting completion
+- `Due`: Payment has expired
+- `Completed`: Payment successfully processed
+- `Canceled`: Payment canceled by admin/system
+- `Failed`: Payment processing failed
+
+### Payment Drivers
+
+The package supports multiple payment drivers:
+
+1. **Offline Driver**: For cash payments and manual transactions
+2. **Moota Transaction Driver**: Indonesian bank transfer integration with VA and QRIS support
+3. **Bayarind Driver**: Multi-channel payment gateway supporting various e-wallets and VA
+
+### Data Transfer Objects (DTOs)
+
+All data in the package is handled through type-safe Data Transfer Objects using Spatie Laravel Data:
+
+- **PaymentData**: Complete payment information
+- **CreatePaymentData**: Data required to create a new payment
+- **PaymentMethodData**: Payment method information
+- **CreatePaymentMethodData**: Data for creating payment methods
+- **UpdatePaymentMethodData**: Data for updating payment methods
+- **FilterPaginationData**: Advanced filtering and pagination data
+
 ## Available Commands
 
-This package provides two artisan commands:
+This package provides powerful artisan commands:
 
 ### 1. Payment Due Command
 Automatically changes pending payments to due status when they exceed their due date:
@@ -72,34 +126,34 @@ protected function schedule(Schedule $schedule)
 ### 2. Make Transitions Command
 Generates custom transition files for handling payment state changes:
 
-## Customizing Payment Transitions
+```bash
+php artisan taut-payment:make-transitions
+```
 
-You can add custom business logic to payment state changes by creating your own transition classes. This allows you to:
+## Payment Transitions System
 
-- Send notifications when payments are completed
-- Update related models when payment status changes
-- Log payment activities for audit trails
-- Integrate with third-party services
-- Execute custom business rules
+The package uses a powerful state machine system for handling payment status changes. You can add custom business logic to each transition.
+
+### Available Transitions
+
+The system includes the following transitions:
+- `ToPending` - When payment moves to pending status
+- `ToCanceled` - When payment is canceled
+- `ToCompleted` - When payment is successfully completed
+- `ToDue` - When payment becomes overdue
+- `ToFailed` - When payment processing fails
 
 ### Creating Custom Transitions
 
-Use the provided command to generate transition files:
+Generate custom transition files using the artisan command:
 
 ```bash
 php artisan taut-payment:make-transitions
 ```
 
-This will create the following transition files in your `app/Transitions/Payment/` directory:
-- `ToCanceled.php` - Executed when payment is canceled
-- `ToCompleted.php` - Executed when payment is completed
-- `ToDue.php` - Executed when payment becomes due
-- `ToPending.php` - Executed when payment becomes pending
-- `ToFailed.php` - Executed when payment becomes failed
+This creates transition files in your `app/Transitions/Payment/` directory that you can customize.
 
-### Example Custom Transition
-
-Each transition file extends the `PaymentTransitionAbstract` class. Here's an example of customizing the `ToCompleted` transition:
+### Custom Transition Examples
 
 ```php
 <?php
@@ -108,8 +162,6 @@ namespace App\Transitions\Payment;
 
 use TautId\Payment\Abstracts\PaymentTransitionAbstract;
 use TautId\Payment\Models\Payment;
-use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Log;
 
 class ToCompleted extends PaymentTransitionAbstract
 {
@@ -122,46 +174,55 @@ class ToCompleted extends PaymentTransitionAbstract
 
 ### Configuration
 
-The transition namespace can be configured in your `config/taut-payment.php`:
+Configure the transition namespace in `config/taut-payment.php`:
 
 ```php
 'transitions_namespace' => 'App\\Transitions\\Payment',
 ```
 
-This allows you to organize your transitions in a different namespace if needed.
+## Core Services
 
-## Using the Services
-
-The Taut Payment package provides two main service classes for managing payments and payment methods programmatically.
+The package provides comprehensive service classes for managing payments and payment methods with full type safety.
 
 ### PaymentService
 
-The `PaymentService` class provides comprehensive functionality for managing payments throughout their lifecycle.
+The `PaymentService` class handles all payment operations throughout the payment lifecycle.
 
 #### Retrieving Payments
 
 ```php
 use TautId\Payment\Services\PaymentService;
 use TautId\Payment\Data\Utility\FilterPaginationData;
+use TautId\Payment\Data\Utility\ActiveFilterPaginationData;
 
 $paymentService = app(PaymentService::class);
 
 // Get all payments
 $allPayments = $paymentService->getAllPayments();
 
-// Get paginated payments with filtering
+// Advanced filtering with pagination
 $filterData = FilterPaginationData::from([
     'page' => 1,
-    'per_page' => 10,
-    'search' => 'customer name', // Optional search term
-    'filters' => ['status' => 'completed'] // Optional filters
+    'per_page' => 20,
+    'sortBy' => 'created_at',
+    'sortDirection' => 'desc',
+    'searchable' => ['customer_name', 'customer_email', 'trx_id'],
+    'searchTerm' => 'john@example.com',
+    'active_filters' => [
+        ActiveFilterPaginationData::from([
+            'column' => 'status',
+            'value' => 'completed'
+        ]),
+        ActiveFilterPaginationData::from([
+            'column' => 'method.driver',  // Nested relationship filtering
+            'value' => 'moota-transaction'
+        ])
+    ]
 ]);
 $paginatedPayments = $paymentService->getPaginatedPayments($filterData);
 
-// Get payment by ID
+// Get specific payments
 $payment = $paymentService->getPaymentById('1');
-
-// Get payment by transaction ID
 $payment = $paymentService->getPaymentByTrxId('PYM-123456789');
 ```
 
@@ -171,59 +232,46 @@ $payment = $paymentService->getPaymentByTrxId('PYM-123456789');
 use TautId\Payment\Data\Payment\CreatePaymentData;
 use Carbon\Carbon;
 
-// Assuming you have an order model or similar
-$order = Order::find(1);
+$order = Order::find(1); // Any Eloquent model
 
-$createData = CreatePaymentData::from([
-    'source' => $order, // Any Eloquent model
-    'method_id' => '1', // Payment method ID
+$payment = $paymentService->createPayment(CreatePaymentData::from([
+    'source' => $order,                    // Polymorphic relationship
+    'method_id' => '1',                    // Payment method ID
     'customer_name' => 'John Doe',
     'customer_email' => 'john@example.com',
-    'customer_phone' => '+1234567890',
-    'amount' => 100.50,
+    'customer_phone' => '628123456789',
+    'amount' => 150000,                    // Amount in rupiah
     'date' => Carbon::now(),
-    'due_at' => Carbon::now()->addDays(3)
-]);
-
-$payment = $paymentService->createPayment($createData);
+    'due_at' => Carbon::now()->addHours(24) // Payment deadline
+]));
 ```
 
-#### Managing Payment Status
+#### Payment Status Management
 
 ```php
-// Change payment to due (when payment period expires)
-$paymentService->changePaymentToDue('1');
+// Status transitions (automatically triggers transition classes)
+$paymentService->changePaymentToDue('1');        // Pending → Due
+$paymentService->changePaymentToCompleted('1');  // Pending → Completed  
+$paymentService->changePaymentToCanceled('1');   // Pending → Canceled
+$paymentService->changePaymentToFailed('1');     // Created/Pending → Failed
 
-// Mark payment as completed
-$paymentService->changePaymentToCompleted('1');
-
-// Cancel payment
-$paymentService->changePaymentToCanceled('1');
-
-// Mark payment as failed
-$paymentService->changePaymentToFailed('1');
-```
-
-#### Updating Payment Data
-
-```php
-// Update payment payload (external payment gateway data)
+// Update payment metadata
 $paymentService->updatePaymentPayload('1', [
-    'gateway_transaction_id' => 'tx_123456',
-    'gateway_reference' => 'REF-789'
+    'gateway_transaction_id' => 'tx_abc123',
+    'reference_number' => 'REF-789',
+    'gateway_data' => ['channel' => 'bank_transfer']
 ]);
 
-// Update payment response (gateway response data)
 $paymentService->updatePaymentResponse('1', [
-    'status_code' => 200,
-    'message' => 'Payment processed successfully',
-    'gateway_response' => ['...']
+    'response_code' => '00',
+    'response_message' => 'Transaction successful',
+    'gateway_response' => $gatewayResponse
 ]);
 ```
 
 ### PaymentMethodService
 
-The `PaymentMethodService` class handles the management of payment methods and their configurations.
+Manages payment methods and their driver configurations.
 
 #### Retrieving Payment Methods
 
@@ -235,34 +283,38 @@ $methodService = app(PaymentMethodService::class);
 // Get all payment methods
 $allMethods = $methodService->getAllPaymentMethods();
 
-// Get paginated payment methods
+// Paginated retrieval with filtering
 $filterData = FilterPaginationData::from([
     'page' => 1,
-    'per_page' => 10,
-    'filters' => ['is_active' => true]
+    'per_page' => 15,
+    'active_filters' => [
+        ActiveFilterPaginationData::from(['column' => 'is_active', 'value' => true]),
+        ActiveFilterPaginationData::from(['column' => 'driver', 'value' => 'moota-transaction'])
+    ]
 ]);
 $paginatedMethods = $methodService->getPaginatePaymentMethods($filterData);
 
-// Get payment method by ID
+// Get specific payment method
 $method = $methodService->getPaymentMethodById('1');
+$bayarindMethods = $methodService->getPaymentMethodByDriver('bayarind');
 ```
 
-#### Working with Drivers
+#### Driver Management
 
 ```php
 // Get all available drivers
-$availableDrivers = $methodService->getAllDrivers();
-// Returns: ['moota-transaction' => 'Moota-transaction', 'offline' => 'Offline']
+$drivers = $methodService->getAllDrivers();
+// Returns: ['moota-transaction' => 'Moota-transaction', 'offline' => 'Offline', 'bayarind' => 'Bayarind']
 
-// Get channels supported by a specific driver
+// Get services for each driver
 $offlineServices = $methodService->getServices('offline');
-// For offline driver returns: ['cash']
+// Returns: ['cash' => 'Cash']
 
-$mootaServices = $methodService->getServices('moota-transaction');
-// Returns available channels for Moota driver
+$mootaServices = $methodService->getServices('moota-transaction');  
+// Returns dynamic bank accounts from Moota API
 
 $bayarindServices = $methodService->getServices('bayarind');
-// Returns available channels for Bayarind driver
+// Returns: [1021 => 'BCA Virtual Account', 1085 => 'Shopee Pay', ...]
 ```
 
 #### Creating Payment Methods
@@ -270,113 +322,199 @@ $bayarindServices = $methodService->getServices('bayarind');
 ```php
 use TautId\Payment\Data\PaymentMethod\CreatePaymentMethodData;
 
-// Create a cash payment method
-$createData = CreatePaymentMethodData::from([
+// Offline payment method
+$offlineMethod = $methodService->createPaymentMethod(CreatePaymentMethodData::from([
     'name' => 'Cash Payment',
     'driver' => 'offline',
-    'service' => 'cash',
-    'type' => 'production', // or 'sandbox'
-    'meta' => [
-        'description' => 'Pay with cash at our counter',
-        'instructions' => 'Please bring exact change',
-        'channels' => ['cash']
-    ]
-]);
-
-$paymentMethod = $methodService->createPaymentMethod($createData);
-
-// Create a Moota payment method
-$mootaData = CreatePaymentMethodData::from([
-    'name' => 'Bank Transfer - BCA',
-    'driver' => 'moota-transaction',
+    'service' => 'cash', // getService by channel
     'type' => 'production',
-    'meta' => [
-        'bank_code' => 'BCA',
-        'account_number' => '1234567890',
-        'account_name' => 'Your Company Name'
-    ]
-]);
+    'meta' => []
+]));
 
-$bankTransferMethod = $methodService->createPaymentMethod($mootaData);
+// Moota bank transfer
+$mootaMethod = $methodService->createPaymentMethod(CreatePaymentMethodData::from([
+    'name' => 'Bank Transfer BCA',
+    'driver' => 'moota-transaction',
+    'service' => 'BCA_BANK_ID', // getService by channel
+    'type' => 'production',
+    'meta' => []
+]));
+
+// Bayarind e-wallet
+$bayarindMethod = $methodService->createPaymentMethod(CreatePaymentMethodData::from([
+    'name' => 'Shopee Pay',
+    'driver' => 'bayarind',
+    'service' => '1085', // getService by channel
+    'type' => 'sandbox',
+    'meta' => [
+        'bayarind_channel_id' => 'your_channel_id'
+    ]
+]));
 ```
 
-#### Updating Payment Methods
+#### Updating and Managing Methods
 
 ```php
 use TautId\Payment\Data\PaymentMethod\UpdatePaymentMethodData;
 
-$updateData = UpdatePaymentMethodData::from([
+// Update payment method
+$methodService->updatePaymentMethod(UpdatePaymentMethodData::from([
     'id' => '1',
-    'name' => 'Updated Cash Payment',
+    'name' => 'Updated Payment Method',
     'driver' => 'offline',
-    'service' => 'cash',
+    'service' => 'cash', 
     'type' => 'production',
-    'meta' => [
-        'description' => 'Updated description',
-        'instructions' => 'Updated instructions'
-    ]
-]);
+    'meta' => ['updated' => 'metadata']
+]));
 
-$updatedMethod = $methodService->updatePaymentMethod($updateData);
-```
-
-#### Managing Payment Method Status
-
-```php
-// Activate a payment method
+// Activate/deactivate methods
 $methodService->activatePaymentMethod('1');
-
-// Deactivate a payment method
 $methodService->deactivatePaymentMethod('1');
 ```
 
-### Practical Usage Examples
+## Data Structures
 
-#### Complete Payment Flow
+### Enums
+
+#### PaymentStatusEnum
+
+```php
+use TautId\Payment\Enums\PaymentStatusEnum;
+
+PaymentStatusEnum::Created;      // 'created'
+PaymentStatusEnum::Pending;      // 'pending'
+PaymentStatusEnum::Due;          // 'due'
+PaymentStatusEnum::Canceled;     // 'canceled'
+PaymentStatusEnum::Completed;    // 'completed'
+PaymentStatusEnum::Failed;       // 'failed'
+
+// Get all statuses as array
+PaymentStatusEnum::toArray();
+```
+
+#### PaymentMethodTypeEnum
+
+```php
+use TautId\Payment\Enums\PaymentMethodTypeEnum;
+
+PaymentMethodTypeEnum::Sandbox;     // 'sandbox'
+PaymentMethodTypeEnum::Production;  // 'production'
+```
+
+## Advanced Usage Examples
+
+### Complete E-commerce Flow
 
 ```php
 use TautId\Payment\Services\{PaymentService, PaymentMethodService};
 use TautId\Payment\Data\Payment\CreatePaymentData;
+use TautId\Payment\Enums\PaymentStatusEnum;
 
-// 1. Get available payment methods for user selection
-$methodService = app(PaymentMethodService::class);
-$activeMethods = $methodService->getAllPaymentMethods()
-    ->filter(fn($method) => $method->is_active);
-
-// 2. Create payment when user selects a method
-$paymentService = app(PaymentService::class);
-$payment = $paymentService->createPayment(CreatePaymentData::from([
-    'source' => $order,
-    'method_id' => $selectedMethodId,
-    'customer_name' => $request->customer_name,
-    'customer_email' => $request->customer_email,
-    'amount' => $order->total,
-    'date' => Carbon::now(),
-    'due_at' => Carbon::now()->addHours(24)
-]));
-
-// 3. Handle payment completion (webhook or manual)
-if ($paymentConfirmed) {
-    $paymentService->changePaymentToCompleted($payment->id);
+class CheckoutController extends Controller
+{
+    public function processCheckout(Request $request)
+    {
+        $order = Order::create($request->validated());
+        
+        // Get active payment methods
+        $methodService = app(PaymentMethodService::class);
+        $paymentMethods = $methodService->getAllPaymentMethods()
+            ->filter(fn($method) => $method->is_active);
+            
+        return view('checkout', compact('order', 'paymentMethods'));
+    }
+    
+    public function createPayment(Request $request, Order $order)
+    {
+        $paymentService = app(PaymentService::class);
+        
+        $payment = $paymentService->createPayment(CreatePaymentData::from([
+            'source' => $order,
+            'method_id' => $request->payment_method_id,
+            'customer_name' => $order->customer_name,
+            'customer_email' => $order->customer_email,
+            'customer_phone' => $order->customer_phone,
+            'amount' => $order->total_amount,
+            'date' => now(),
+            'due_at' => now()->addHours(24)
+        ]));
+        
+        return redirect()->route('payment.show', $payment->id);
+    }
 }
 ```
 
-#### Error Handling
+### Custom Filtering and Search
 
-All service methods throw appropriate exceptions that you should handle:
+```php
+use TautId\Payment\Data\Utility\{FilterPaginationData, ActiveFilterPaginationData};
+
+// Advanced payment search
+$filterData = FilterPaginationData::from([
+    'page' => 1,
+    'per_page' => 25,
+    'sortBy' => 'total',
+    'sortDirection' => 'desc',
+    'searchable' => ['customer_name', 'customer_email', 'trx_id'],
+    'searchTerm' => 'john',
+    'active_filters' => [
+        // Filter by date range
+        ActiveFilterPaginationData::from([
+            'column' => 'created_at',
+            'value' => [now()->subDays(7), now()]
+        ]),
+        // Filter by payment method driver
+        ActiveFilterPaginationData::from([
+            'column' => 'method.driver', 
+            'value' => 'moota-transaction'
+        ]),
+        // Filter by status
+        ActiveFilterPaginationData::from([
+            'column' => 'status',
+            'value' => [PaymentStatusEnum::Completed->value, PaymentStatusEnum::Pending->value]
+        ])
+    ]
+]);
+
+$payments = $paymentService->getPaginatedPayments($filterData);
+```
+
+### Error Handling Best Practices
 
 ```php
 use Illuminate\Database\RecordNotFoundException;
+use TautId\Payment\Services\PaymentService;
 
-try {
-    $payment = $paymentService->getPaymentById('invalid-id');
-} catch (RecordNotFoundException $e) {
-    // Handle payment not found
-    return response()->json(['error' => 'Payment not found'], 404);
-} catch (\InvalidArgumentException $e) {
-    // Handle invalid arguments (e.g., wrong status transition)
-    return response()->json(['error' => $e->getMessage()], 400);
+class PaymentApiController extends Controller
+{
+    public function show($id)
+    {
+        try {
+            $paymentService = app(PaymentService::class);
+            $payment = $paymentService->getPaymentById($id);
+            
+            return response()->json($payment);
+            
+        } catch (RecordNotFoundException $e) {
+            return response()->json([
+                'error' => 'Payment not found'
+            ], 404);
+            
+        } catch (\InvalidArgumentException $e) {
+            return response()->json([
+                'error' => 'Invalid request: ' . $e->getMessage()
+            ], 400);
+            
+        } catch (\Exception $e) {
+            \Log::error('Payment retrieval failed', [
+                'payment_id' => $id,
+                'error' => $e->getMessage()
+            ]);
+            
+            return response()->json([
+                'error' => 'Internal server error'
+            ], 500);
+        }
+    }
 }
 ```
-
-This will create cash payment methods for both production and sandbox environments.
