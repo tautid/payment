@@ -96,14 +96,13 @@ class BayarindDriver extends PaymentMethodDriverAbstract
         app(PaymentService::class)->updatePaymentPayload($data->id, $payload);
         app(PaymentService::class)->updatePaymentResponse($data->id, $response->collect()->toArray());
 
-        if($response->json('insertStatus') != "00")
-        {
+        if ($response->json('insertStatus') != '00') {
             throw new \Exception($response->json('insertMessage'));
         }
 
         app(PaymentService::class)->updateDueAt(
             $data->id,
-            Carbon::parse(data_get($payload,'transactionExpire'))
+            Carbon::parse(data_get($payload, 'transactionExpire'))
         );
     }
 
