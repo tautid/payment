@@ -19,6 +19,7 @@ class Payment extends Model
         PaymentStatusEnum::Due->value => Transitions\ToDue::class,
         PaymentStatusEnum::Canceled->value => Transitions\ToCanceled::class,
         PaymentStatusEnum::Completed->value => Transitions\ToCompleted::class,
+        PaymentStatusEnum::Failed->value => Transitions\ToFailed::class
     ];
 
     protected $table = 'taut_payments';

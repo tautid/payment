@@ -2,15 +2,16 @@
 
 namespace TautId\Payment\Factories\PaymentMethodDrivers;
 
-use TautId\Payment\Abstracts\PaymentMethodDriverAbstract;
+use Illuminate\Http\Request;
 use TautId\Payment\Data\Payment\PaymentData;
+use TautId\Payment\Abstracts\PaymentMethodDriverAbstract;
 
 class OfflineDriver extends PaymentMethodDriverAbstract
 {
-    public function channels(): array
+    public function services(): array
     {
         return [
-            'cash',
+            'cash' => 'Cash',
         ];
     }
 
@@ -32,5 +33,11 @@ class OfflineDriver extends PaymentMethodDriverAbstract
     public function metaValidation(array $meta): void
     {
         // no need to perform anything because the driver is offline
+    }
+
+    public function checkSignature(Request $request): bool
+    {
+        // no need to perform anything because the driver is offline
+        return true;
     }
 }

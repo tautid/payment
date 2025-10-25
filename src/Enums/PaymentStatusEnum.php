@@ -9,6 +9,7 @@ enum PaymentStatusEnum: string
     case Due = 'due';
     case Canceled = 'canceled';
     case Completed = 'completed';
+    case Failed = 'failed';
 
     public static function toArray(): array
     {

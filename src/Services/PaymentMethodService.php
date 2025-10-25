@@ -50,37 +50,47 @@ class PaymentMethodService
         return PaymentMethodData::from($record);
     }
 
+    public function getPaymentMethodByDriver(string $driver): DataCollection
+    {
+        return new DataCollection(
+            PaymentMethodData::class,
+            PaymentMethod::where('driver',$driver)->get()->map(fn ($record) => PaymentMethodData::from($record))
+        );
+    }
+
     public function getAllDrivers(): array
     {
         return PaymentMethodDriverFactory::getOptions();
     }
 
-    public function getChannels(string $driver): array
+    public function getServices(string $driver): array
     {
         $driver = PaymentMethodDriverFactory::getDriver($driver);
 
-        return $driver->channels();
+        return $driver->services();
     }
 
     public function createPaymentMethod(CreatePaymentMethodData $data): PaymentMethodData
     {
         $drivers = PaymentMethodDriverFactory::getOptions();
 
-        if (! in_array(strtolower($data->driver), $drivers)) {
+        if (! in_array(strtolower($data->driver), array_keys($drivers)))
             throw new \InvalidArgumentException('Invalid driver');
-        }
 
-        if (! in_array($data->type, PaymentMethodTypeEnum::toArray())) {
+        if (! in_array($data->type, array_keys(PaymentMethodTypeEnum::toArray())))
             throw new \InvalidArgumentException('Invalid type');
-        }
 
         $driver = PaymentMethodDriverFactory::getDriver($data->driver);
+
+        if (! in_array($data->service, array_keys($driver->services())))
+            throw new \InvalidArgumentException('Invalid service id');
 
         $driver->metaValidation($data->meta);
 
         $record = PaymentMethod::create([
             'name' => $data->name,
             'driver' => strtolower($data->driver),
+            'service' => $data->service,
             'type' => $data->type,
             'is_active' => true,
             'meta' => $data->meta,
@@ -97,17 +107,26 @@ class PaymentMethodService
             throw new RecordNotFoundException('Payment method not found');
         }
 
-        if (! in_array($data->type, PaymentMethodTypeEnum::toArray())) {
+        $drivers = PaymentMethodDriverFactory::getOptions();
+
+        if (! in_array(strtolower($data->driver), array_keys($drivers)))
+            throw new \InvalidArgumentException('Invalid driver');
+
+        if (! in_array($data->type, array_keys(PaymentMethodTypeEnum::toArray()))) {
             throw new \InvalidArgumentException('Invalid type');
         }
 
         $driver = PaymentMethodDriverFactory::getDriver($data->driver);
+
+        if (! in_array($data->service, array_keys($driver->services())))
+            throw new \InvalidArgumentException('Invalid service id');
 
         $driver->metaValidation($data->meta);
 
         $record->update([
             'name' => $data->name,
             'driver' => strtolower($data->driver),
+            'service' => $data->service,
             'type' => $data->type,
             'meta' => $data->meta,
         ]);

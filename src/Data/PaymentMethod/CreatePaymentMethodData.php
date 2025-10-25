@@ -9,6 +9,7 @@ class CreatePaymentMethodData extends Data
     public function __construct(
         public string $name,
         public string $driver,
+        public string $service,
         public string $type,
         public ?array $meta
     ) {}

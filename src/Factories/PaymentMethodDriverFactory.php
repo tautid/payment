@@ -3,8 +3,9 @@
 namespace TautId\Payment\Factories;
 
 use TautId\Payment\Abstracts\PaymentMethodDriverAbstract;
-use TautId\Payment\Factories\PaymentMethodDrivers\MootaTransactionDriver;
 use TautId\Payment\Factories\PaymentMethodDrivers\OfflineDriver;
+use TautId\Payment\Factories\PaymentMethodDrivers\BayarindDriver;
+use TautId\Payment\Factories\PaymentMethodDrivers\MootaTransactionDriver;
 
 class PaymentMethodDriverFactory
 {
@@ -13,6 +14,7 @@ class PaymentMethodDriverFactory
         $driver = match (strtolower($driverName)) {
             'moota-transaction' => new MootaTransactionDriver,
             'offline' => new OfflineDriver,
+            'bayarind' => new BayarindDriver,
             default => null
         };
 

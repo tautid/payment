@@ -18,6 +18,7 @@ return [
     'drivers' => [
         'moota-transaction',
         'offline',
+        'bayarind'
     ],
 
     /*
@@ -44,4 +45,6 @@ return [
 
     'moota_transaction_api_token' => null,
     'moota_transaction_webhook_secret' => null,
+    'bayarind_secret' => null,
+    'bayarind_company_id' => null,
 ];

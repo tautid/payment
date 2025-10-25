@@ -10,6 +10,7 @@ class UpdatePaymentMethodData extends Data
         public string $id,
         public string $name,
         public string $driver,
+        public string $service,
         public string $type,
         public ?array $meta
     ) {}

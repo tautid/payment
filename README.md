@@ -95,6 +95,7 @@ This will create the following transition files in your `app/Transitions/Payment
 - `ToCompleted.php` - Executed when payment is completed
 - `ToDue.php` - Executed when payment becomes due
 - `ToPending.php` - Executed when payment becomes pending
+- `ToFailed.php` - Executed when payment becomes failed
 
 ### Example Custom Transition
 
@@ -198,6 +199,9 @@ $paymentService->changePaymentToCompleted('1');
 
 // Cancel payment
 $paymentService->changePaymentToCanceled('1');
+
+// Mark payment as failed
+$paymentService->changePaymentToFailed('1');
 ```
 
 #### Updating Payment Data
@@ -251,11 +255,14 @@ $availableDrivers = $methodService->getAllDrivers();
 // Returns: ['moota-transaction' => 'Moota-transaction', 'offline' => 'Offline']
 
 // Get channels supported by a specific driver
-$channels = $methodService->getChannels('offline');
+$offlineServices = $methodService->getServices('offline');
 // For offline driver returns: ['cash']
 
-$mootaChannels = $methodService->getChannels('moota-transaction');
+$mootaServices = $methodService->getServices('moota-transaction');
 // Returns available channels for Moota driver
+
+$bayarindServices = $methodService->getServices('bayarind');
+// Returns available channels for Bayarind driver
 ```
 
 #### Creating Payment Methods
@@ -267,6 +274,7 @@ use TautId\Payment\Data\PaymentMethod\CreatePaymentMethodData;
 $createData = CreatePaymentMethodData::from([
     'name' => 'Cash Payment',
     'driver' => 'offline',
+    'service' => 'cash',
     'type' => 'production', // or 'sandbox'
     'meta' => [
         'description' => 'Pay with cash at our counter',
@@ -301,6 +309,7 @@ $updateData = UpdatePaymentMethodData::from([
     'id' => '1',
     'name' => 'Updated Cash Payment',
     'driver' => 'offline',
+    'service' => 'cash',
     'type' => 'production',
     'meta' => [
         'description' => 'Updated description',
