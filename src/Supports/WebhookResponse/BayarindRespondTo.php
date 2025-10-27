@@ -18,7 +18,7 @@ class BayarindRespondTo implements RespondsToWebhook
     {
         $methods = app(PaymentMethodService::class)->getPaymentMethodByDriver('bayarind');
 
-        $channels = collect($methods)->filter(fn($method) => data_get($method,'meta.bayarind_channel_id') == $channelId);
+        $channels = collect($methods)->filter(fn ($method) => data_get($method, 'meta.bayarind_channel_id') == $channelId);
 
         return $channels;
     }
