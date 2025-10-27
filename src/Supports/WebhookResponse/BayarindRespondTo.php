@@ -18,7 +18,7 @@ class BayarindRespondTo implements RespondsToWebhook
     {
         $methods = app(PaymentMethodService::class)->getPaymentMethodByDriver('bayarind');
 
-        $channels = collect($methods)->where('service', $channelId);
+        $channels = collect($methods)->filter(fn($method) => data_get($method,'meta.bayarind_channel_id') == $channelId);
 
         return $channels;
     }
@@ -71,7 +71,7 @@ class BayarindRespondTo implements RespondsToWebhook
         // Invalid customerAccount (VA only)
         if (
             $request->get('customerAccount') &&
-            (data_get($payment->response, 'customerAccount') != $request->get('customerAccount'))
+            (data_get($payment->payload, 'customerAccount') != $request->get('customerAccount'))
         ) {
             return $this->invalidCustomerAccount($request);
         }

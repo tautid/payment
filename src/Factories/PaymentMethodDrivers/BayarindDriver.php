@@ -14,7 +14,7 @@ class BayarindDriver extends PaymentMethodDriverAbstract
 {
     private string $sandbox_url = 'https://paytest.bayarind.id/PaymentRegister/';
 
-    private string $production_url = 'https://pay.sprintasia.net/PaymentRegister/';
+    // private string $production_url = 'https://pay.sprintasia.net/PaymentRegister/';
 
     public function services(): array
     {
@@ -36,7 +36,7 @@ class BayarindDriver extends PaymentMethodDriverAbstract
     private function getBaseUrl(string $endpoint): string
     {
         $base_url = (env('APP_ENV', 'local') == 'production')
-                        ? $this->production_url
+                        ? $this->sandbox_url
                         : $this->sandbox_url;
 
         return "{$base_url}{$endpoint}";
@@ -52,6 +52,21 @@ class BayarindDriver extends PaymentMethodDriverAbstract
         $number = (($number) ? substr($number, 2) : mt_rand(10000000000, 99999999999));
 
         return $this->getCompanyId().$number;
+    }
+
+    private function getRedirectUrl(PaymentData $data): string
+    {
+        $callbackUrl = config('taut-payment.redirect_url');
+
+        if (empty($callbackUrl)) {
+            throw new \Exception(
+                'Bayarind callback URL is not configured. Please set "redirect_url" in taut-payment config or BAYARIND_CALLBACK_URL environment variable.'
+            );
+        }
+
+        $callbackUrl = str_replace(['{id}', '{trx_id}'], [$data->id, $data->trx_id], $callbackUrl);
+
+        return $callbackUrl;
     }
 
     public function createPayment(PaymentData $data): void
@@ -77,7 +92,7 @@ class BayarindDriver extends PaymentMethodDriverAbstract
             'description' => "Payment {$data->trx_id}",
             'customerAccount' => $this->getCustomerAccount($data->customer_phone), // BCAVA
             'customerName' => $data->customer_name,
-            'callbackURL' => route('webhook-client-bayarind-taut'),
+            'callbackURL' => $this->getRedirectUrl($data),
         ];
 
         $extraPayload = match ((int) $data->method->service) {

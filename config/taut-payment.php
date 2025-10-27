@@ -47,4 +47,22 @@ return [
     'moota_transaction_webhook_secret' => null,
     'bayarind_secret' => null,
     'bayarind_company_id' => null,
+
+    /*
+    |--------------------------------------------------------------------------
+    | Redirect URLs
+    |--------------------------------------------------------------------------
+    |
+    | Configure where payment redirect to from vendor
+    | Use {id} or {trx_id} as placeholders for dynamic payment identifiers
+    |
+    | Examples:
+    | - Dynamic with payment ID: 'https://yourdomain.com/payment/{id}'
+    | - Dynamic with payment TRX ID: 'https://yourdomain.com/payment/{trx_id}'
+    | - Static URL: 'https://yourdomain.com/payment/bayarind/callback'
+    |
+    | note: replace using env() for best practice
+    */
+
+    'redirect_url' => null,
 ];
