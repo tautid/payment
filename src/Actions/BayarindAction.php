@@ -9,9 +9,8 @@ class BayarindAction
 {
     public function run(PaymentData $data): View
     {
-        try{
-            $result = match((int) $data->method->service)
-            {
+        try {
+            $result = match ((int) $data->method->service) {
                 1021 => $this->handlingBcaVaView($data),
                 1085 => $this->handlingShopeepayView($data),
                 1086 => $this->handlingOvoView($data),
@@ -33,8 +32,8 @@ class BayarindAction
 
     private function handlingBcaVaView(PaymentData $data): View
     {
-        return view('taut-payment::payment.bayarind.bcava',[
-            'vaNumber' => data_get($data->payload,'customerAccount')
+        return view('taut-payment::payment.bayarind.bcava', [
+            'vaNumber' => data_get($data->payload, 'customerAccount'),
         ]);
     }
 
