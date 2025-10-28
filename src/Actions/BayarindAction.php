@@ -12,6 +12,7 @@ class BayarindAction
         try{
             $result = match((int) $data->method->service)
             {
+                1021 => $this->handlingBcaVaView($data),
                 1085 => $this->handlingShopeepayView($data),
                 1086 => $this->handlingOvoView($data),
                 1084 => $this->handlingDanaView($data),
@@ -27,6 +28,13 @@ class BayarindAction
         {
             throw new \Exception($e);
         }
+    }
+
+    private function handlingBcaVaView(PaymentData $data): View
+    {
+        return view('taut-payment::payment.bayarind.bcava',[
+            'vaNumber' => data_get($data->payload,'customerAccount')
+        ]);
     }
 
     private function handlingLinkAjaView(PaymentData $data): View

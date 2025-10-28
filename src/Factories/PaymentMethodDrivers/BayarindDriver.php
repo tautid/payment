@@ -5,16 +5,17 @@ namespace TautId\Payment\Factories\PaymentMethodDrivers;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
+use TautId\Payment\Services\PaymentService;
+use TautId\Payment\Data\Payment\PaymentData;
+use TautId\Payment\Enums\PaymentMethodTypeEnum;
 use Spatie\WebhookClient\Exceptions\InvalidConfig;
 use TautId\Payment\Abstracts\PaymentMethodDriverAbstract;
-use TautId\Payment\Data\Payment\PaymentData;
-use TautId\Payment\Services\PaymentService;
 
 class BayarindDriver extends PaymentMethodDriverAbstract
 {
     private string $sandbox_url = 'https://paytest.bayarind.id/PaymentRegister/';
 
-    // private string $production_url = 'https://pay.sprintasia.net/PaymentRegister/';
+    private string $production_url = 'https://pay.sprintasia.net/PaymentRegister/';
 
     public function services(): array
     {
@@ -33,11 +34,9 @@ class BayarindDriver extends PaymentMethodDriverAbstract
         return config('taut-payment.bayarind_secret');
     }
 
-    private function getBaseUrl(string $endpoint): string
+    private function getBaseUrl(string $endpoint, bool $is_production = false): string
     {
-        $base_url = (env('APP_ENV', 'local') == 'production')
-                        ? $this->sandbox_url
-                        : $this->sandbox_url;
+        $base_url = $is_production ? $this->production_url : $this->sandbox_url;
 
         return "{$base_url}{$endpoint}";
     }
@@ -106,7 +105,11 @@ class BayarindDriver extends PaymentMethodDriverAbstract
 
         $payload = array_merge($payload, $extraPayload);
 
-        $response = Http::asForm()->post($this->getBaseUrl(''), $payload);
+        $response = Http::asForm()->post(
+            $this->getBaseUrl(
+                endpoint: '',
+                is_production: $data->method->type == PaymentMethodTypeEnum::Production->value
+            ), $payload);
 
         app(PaymentService::class)->updatePaymentPayload($data->id, $payload);
         app(PaymentService::class)->updatePaymentResponse($data->id, $response->collect()->toArray());
