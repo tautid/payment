@@ -9,7 +9,7 @@ class BayarindWebhookReceiverJob extends ProcessWebhookJob
 {
     public function handle()
     {
-        try{
+        try {
             $payload = $this->webhookCall->payload;
 
             $payment = app(PaymentService::class)->getPaymentByTrxId(data_get($payload, 'transactionNo'));
@@ -27,8 +27,7 @@ class BayarindWebhookReceiverJob extends ProcessWebhookJob
                 default: // Failed
                     app(PaymentService::class)->changePaymentToFailed($payment->id);
             }
-        }catch(\InvalidArgumentException $e)
-        {
+        } catch (\InvalidArgumentException $e) {
             //
         }
     }
