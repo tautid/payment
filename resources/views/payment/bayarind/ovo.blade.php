@@ -28,15 +28,13 @@
             const redirectUrl = '{{ $redirectUrl }}';
 
             if (isInIframe()) {
-                // We're in an iframe - redirect parent window
                 window.parent.location.href = redirectUrl;
             } else {
-                // We're not in an iframe - normal redirect
                 window.location.href = redirectUrl;
             }
         }
 
-        // Auto-redirect after a short delay to show loading message
+        // a short delay to show loading message
         setTimeout(redirectToParent, 1500);
     </script>
 @endsection

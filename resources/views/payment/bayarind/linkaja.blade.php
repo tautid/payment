@@ -32,17 +32,15 @@
             const form = document.getElementById('redirectForm');
 
             if (isInIframe()) {
-                // We're in an iframe - target parent window
                 form.target = '_parent';
             } else {
-                // We're not in an iframe - normal submission
                 form.target = '_self';
             }
 
             form.submit();
         }
 
-        // Auto-submit after a short delay to show loading message
+        // a short delay to show loading message
         setTimeout(submitToParent, 1500);
     </script>
 @endsection
