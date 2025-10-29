@@ -62,7 +62,7 @@ class MootaTransactionDriver extends PaymentMethodDriverAbstract
 
             $payload = [
                 'order_id' => $data->trx_id,
-                'bank_account_id' => data_get($data->method->meta, 'moota_bank_id'),
+                'bank_account_id' => $data->method->service,
                 'customers' => [
                     'name' => $data->customer_name,
                     'email' => $data->customer_email,
