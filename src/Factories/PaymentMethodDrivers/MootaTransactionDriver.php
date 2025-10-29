@@ -113,9 +113,7 @@ class MootaTransactionDriver extends PaymentMethodDriverAbstract
 
     public function metaValidation(array $meta): void
     {
-        if (empty(data_get($meta, 'moota_bank_id'))) {
-            throw new \Exception('moota_bank_id is required');
-        }
+        //
     }
 
     public function checkSignature(Request $request): bool
