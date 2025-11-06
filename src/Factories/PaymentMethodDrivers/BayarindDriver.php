@@ -5,11 +5,12 @@ namespace TautId\Payment\Factories\PaymentMethodDrivers;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
-use Spatie\WebhookClient\Exceptions\InvalidConfig;
-use TautId\Payment\Abstracts\PaymentMethodDriverAbstract;
+use TautId\Payment\Helpers\ImageHelper;
+use TautId\Payment\Services\PaymentService;
 use TautId\Payment\Data\Payment\PaymentData;
 use TautId\Payment\Enums\PaymentMethodTypeEnum;
-use TautId\Payment\Services\PaymentService;
+use Spatie\WebhookClient\Exceptions\InvalidConfig;
+use TautId\Payment\Abstracts\PaymentMethodDriverAbstract;
 
 class BayarindDriver extends PaymentMethodDriverAbstract
 {
@@ -27,6 +28,22 @@ class BayarindDriver extends PaymentMethodDriverAbstract
             1086 => 'OVO',
             1089 => 'QRIS',
         ];
+    }
+
+    public function getServiceImageFilename(string $service): string
+    {
+        $image_filename = match(strtolower($service))
+        {
+            '1021' => 'bca-va.png',
+            '1085' => 'shopee-pay.png',
+            '1084' => 'dana.png',
+            '1077' => 'linkaja.png',
+            '1086' => 'ovo.png',
+            '1089' => 'qris.png',
+            default => 'bayarind.png'
+        };
+
+        return $image_filename;
     }
 
     private function getToken(): string

@@ -15,6 +15,16 @@ class OfflineDriver extends PaymentMethodDriverAbstract
         ];
     }
 
+    public function getServiceImageFilename(string $service): string
+    {
+        $image_filename = match(strtolower($service))
+        {
+            default => 'tautid.png'
+        };
+
+        return $image_filename;
+    }
+
     public function createPayment(PaymentData $data): void
     {
         // no need to perform anything because the driver is offline

@@ -40,6 +40,11 @@ class TautPaymentServiceProvider extends PackageServiceProvider
 
         $this->registerTransitionBindings();
 
+        // Publish assets
+        $this->publishes([
+            __DIR__.'/../assets/images' => public_path('vendor/taut-payment/images'),
+        ], 'taut-payment-assets');
+
         // Publish seeders
         if ($this->app->runningInConsole()) {
             $this->publishes([

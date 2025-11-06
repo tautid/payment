@@ -53,6 +53,16 @@ class MootaTransactionDriver extends PaymentMethodDriverAbstract
         }
     }
 
+    public function getServiceImageFilename(string $service): string
+    {
+        $image_filename = match(strtolower($service))
+        {
+            default => 'moota.png'
+        };
+
+        return $image_filename;
+    }
+
     public function createPayment(PaymentData $data): void
     {
         try {

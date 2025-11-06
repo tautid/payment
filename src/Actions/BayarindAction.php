@@ -48,7 +48,8 @@ class BayarindAction
     private function handlingShopeepayView(PaymentData $data): View
     {
         return view('taut-payment::payment.bayarind.shopeepay', [
-            'qrData' => data_get($data->response, 'redirectData.qr_content'),
+            'redirectUrl' => data_get($data->response, 'redirectURL'),
+            'redirectData' => data_get($data->response, 'redirectData')
         ]);
     }
 

@@ -1,49 +1,40 @@
 @extends('taut-payment::layouts.blank')
 
 @section('content')
-<div style="
-    text-align: center;
-    padding: 15px;
-    background: white;
-    border-radius: 10px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    max-width: 100%;
-    width: auto;
-">
-    <h3 style="margin: 0 0 15px 0; color: #FF5722; font-size: clamp(14px, 4vw, 18px);">ShopeePay</h3>
+    <div style="text-align: center; padding: 20px; color: #333;">
+        <p>Redirecting to Shopeepay payment...</p>
+        <div style="margin: 20px auto; width: 30px; height: 30px; border: 3px solid #f3f3f3; border-top: 3px solid #3498db; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+    </div>
 
-    @if(!empty($qrData))
-        <!-- Generate QR code using API with responsive sizing -->
-        <img src="https://api.qrserver.com/v1/create-qr-code/?size=400x400&data={{ urlencode($qrData) }}"
-             style="
-                width: 100%;
-                max-width: min(300px, 80vw, 80vh);
-                height: auto;
-                aspect-ratio: 1;
-                border: 1px solid #e0e0e0;
-                border-radius: 8px;
-                object-fit: contain;
-             "
-             alt="ShopeePay QR Code"/>
-    @else
-        <div style="
-            width: 100%;
-            max-width: min(300px, 80vw, 80vh);
-            aspect-ratio: 1;
-            border: 1px solid #e0e0e0;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background-color: #f5f5f5;
-            margin: 0 auto;
-        ">
-            <p style="color: #666; font-size: clamp(12px, 3vw, 14px); margin: 0;">QR Code data not available</p>
-        </div>
-    @endif
+    <style>
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
 
-    <p style="margin: 15px 0 0 0; color: #666; font-size: clamp(11px, 2.5vw, 13px);">
-        Scan with ShopeePay app to pay
-    </p>
-</div>
+    <script>
+        // Check if we're in an iframe
+        function isInIframe() {
+            try {
+                return window.self !== window.top;
+            } catch (e) {
+                return true;
+            }
+        }
+
+        // Redirect to parent window if in iframe, otherwise normal redirect
+        function redirectToParent() {
+            const redirectUrl = '{{ $redirectUrl }}';
+
+            if (isInIframe()) {
+                window.parent.location.href = redirectUrl;
+            } else {
+                window.location.href = redirectUrl;
+            }
+        }
+
+        // a short delay to show loading message
+        setTimeout(redirectToParent, 1500);
+    </script>
 @endsection
