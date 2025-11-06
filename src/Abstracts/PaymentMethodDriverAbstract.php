@@ -3,8 +3,8 @@
 namespace TautId\Payment\Abstracts;
 
 use Illuminate\Http\Request;
-use TautId\Payment\Helpers\ImageHelper;
 use TautId\Payment\Data\Payment\PaymentData;
+use TautId\Payment\Helpers\ImageHelper;
 
 abstract class PaymentMethodDriverAbstract
 {
@@ -12,14 +12,15 @@ abstract class PaymentMethodDriverAbstract
     {
         $image_filename = $this->getServiceImageFilename($service);
 
-        if(empty($image_filename)) return null;
+        if (empty($image_filename)) {
+            return null;
+        }
 
         $image_path = public_path("vendor/taut-payment/images/methods/{$image_filename}");
 
         if ($is_base64 && file_exists($image_path)) {
             try {
-                if($is_grayscale)
-                {
+                if ($is_grayscale) {
                     return ImageHelper::convertImageToGrayscaleBase64($image_path);
                 }
 

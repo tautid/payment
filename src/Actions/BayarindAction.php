@@ -49,7 +49,7 @@ class BayarindAction
     {
         return view('taut-payment::payment.bayarind.shopeepay', [
             'redirectUrl' => data_get($data->response, 'redirectURL'),
-            'redirectData' => data_get($data->response, 'redirectData')
+            'redirectData' => data_get($data->response, 'redirectData'),
         ]);
     }
 

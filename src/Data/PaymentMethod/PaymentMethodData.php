@@ -4,8 +4,8 @@ namespace TautId\Payment\Data\PaymentMethod;
 
 use Carbon\Carbon;
 use Spatie\LaravelData\Data;
-use TautId\Payment\Models\PaymentMethod;
 use TautId\Payment\Factories\PaymentMethodDriverFactory;
+use TautId\Payment\Models\PaymentMethod;
 
 class PaymentMethodData extends Data
 {
