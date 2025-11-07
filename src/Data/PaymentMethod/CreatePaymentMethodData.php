@@ -10,8 +10,8 @@ class CreatePaymentMethodData extends Data
         public string $name,
         public string $driver,
         public string $service,
-        public ?string $payment_fee_type = 'fixed',
-        public ?float $payment_fee = 0,
+        public ?string $payment_fee_type,
+        public ?float $payment_fee,
         public string $type,
         public ?array $meta
     ) {}
