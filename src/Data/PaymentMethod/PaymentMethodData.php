@@ -4,8 +4,9 @@ namespace TautId\Payment\Data\PaymentMethod;
 
 use Carbon\Carbon;
 use Spatie\LaravelData\Data;
-use TautId\Payment\Factories\PaymentMethodDriverFactory;
 use TautId\Payment\Models\PaymentMethod;
+use TautId\Payment\Enums\PaymentMethodFeeTypeEnum;
+use TautId\Payment\Factories\PaymentMethodDriverFactory;
 
 class PaymentMethodData extends Data
 {
@@ -16,8 +17,8 @@ class PaymentMethodData extends Data
         public string $service,
         public string $type,
         public bool $is_active,
-        public ?string $payment_fee_type = 'fixed',
-        public ?float $payment_fee = 0,
+        public string $payment_fee_type,
+        public float $payment_fee,
         public ?array $meta,
         public string $image_url,
         public Carbon $created_at
@@ -34,6 +35,8 @@ class PaymentMethodData extends Data
             service: $record->service,
             type: $record->type,
             is_active: $record->is_active,
+            payment_fee_type: $record->payment_fee_type ?? PaymentMethodFeeTypeEnum::Fixed->value,
+            payment_fee: $record->payment_fee ?? 0,
             meta: $record->meta,
             image_url: PaymentMethodDriverFactory::getDriver($record->driver)->serviceImageUrl($record->service),
             created_at: $record->created_at
