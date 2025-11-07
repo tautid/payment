@@ -3,16 +3,17 @@
 namespace TautId\Payment\Services;
 
 use Carbon\Carbon;
-use Illuminate\Database\RecordNotFoundException;
-use Spatie\LaravelData\DataCollection;
-use Spatie\LaravelData\PaginatedDataCollection;
-use TautId\Payment\Data\Payment\CreatePaymentData;
-use TautId\Payment\Data\Payment\PaymentData;
-use TautId\Payment\Data\Utility\FilterPaginationData;
-use TautId\Payment\Enums\PaymentStatusEnum;
-use TautId\Payment\Factories\PaymentMethodDriverFactory;
 use TautId\Payment\Models\Payment;
+use Spatie\LaravelData\DataCollection;
+use TautId\Payment\Enums\PaymentStatusEnum;
+use TautId\Payment\Data\Payment\PaymentData;
 use TautId\Payment\Traits\FilterServiceTrait;
+use Spatie\LaravelData\PaginatedDataCollection;
+use Illuminate\Database\RecordNotFoundException;
+use TautId\Payment\Data\Payment\CreatePaymentData;
+use TautId\Payment\Enums\PaymentMethodFeeTypeEnum;
+use TautId\Payment\Data\Utility\FilterPaginationData;
+use TautId\Payment\Factories\PaymentMethodDriverFactory;
 
 class PaymentService
 {
@@ -67,6 +68,10 @@ class PaymentService
 
         $driver = PaymentMethodDriverFactory::getDriver($method->driver);
 
+        $fee = ($method->payment_fee_type == PaymentMethodFeeTypeEnum::Percent->value)
+                ? $data->amount * ($method->payment_fee / 100)
+                : $method->payment_fee;
+
         $record = Payment::create([
             'trx_id' => uniqid(),
             'method_id' => $method->id,
@@ -78,7 +83,8 @@ class PaymentService
             'customer_email' => $data->customer_email,
             'status' => PaymentStatusEnum::Created->value,
             'amount' => $data->amount,
-            'total' => $data->amount,
+            'payment_fee' => $fee,
+            'total' => $data->amount + $fee,
             'date' => $data->date,
             'due_at' => $data->due_at,
         ]);

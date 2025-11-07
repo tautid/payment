@@ -16,6 +16,8 @@ class PaymentMethodData extends Data
         public string $service,
         public string $type,
         public bool $is_active,
+        public ?string $payment_fee_type = 'fixed',
+        public ?float $payment_fee = 0,
         public ?array $meta,
         public string $image_url,
         public Carbon $created_at

@@ -2,17 +2,18 @@
 
 namespace TautId\Payment\Services;
 
-use Illuminate\Database\RecordNotFoundException;
 use Spatie\LaravelData\DataCollection;
-use Spatie\LaravelData\PaginatedDataCollection;
-use TautId\Payment\Data\PaymentMethod\CreatePaymentMethodData;
-use TautId\Payment\Data\PaymentMethod\PaymentMethodData;
-use TautId\Payment\Data\PaymentMethod\UpdatePaymentMethodData;
-use TautId\Payment\Data\Utility\FilterPaginationData;
-use TautId\Payment\Enums\PaymentMethodTypeEnum;
-use TautId\Payment\Factories\PaymentMethodDriverFactory;
 use TautId\Payment\Models\PaymentMethod;
 use TautId\Payment\Traits\FilterServiceTrait;
+use Spatie\LaravelData\PaginatedDataCollection;
+use TautId\Payment\Enums\PaymentMethodTypeEnum;
+use Illuminate\Database\RecordNotFoundException;
+use TautId\Payment\Enums\PaymentMethodFeeTypeEnum;
+use TautId\Payment\Data\Utility\FilterPaginationData;
+use TautId\Payment\Data\PaymentMethod\PaymentMethodData;
+use TautId\Payment\Factories\PaymentMethodDriverFactory;
+use TautId\Payment\Data\PaymentMethod\CreatePaymentMethodData;
+use TautId\Payment\Data\PaymentMethod\UpdatePaymentMethodData;
 
 class PaymentMethodService
 {
@@ -82,6 +83,19 @@ class PaymentMethodService
             throw new \InvalidArgumentException('Invalid type');
         }
 
+        if(! in_array($data->payment_fee_type, array_keys(PaymentMethodFeeTypeEnum::toArray()))){
+            throw new \InvalidArgumentException('Invalid fee type');
+        }
+
+        if($data->payment_fee < 0)
+        {
+            throw new \InvalidArgumentException('Unable to fill fee lower than 0');
+        }
+
+        if($data->payment_fee_type == PaymentMethodFeeTypeEnum::Percent->value && $data->payment_fee > 100) {
+            throw new \InvalidArgumentException('Unable to fill fee greater than 100% for type percent');
+        }
+
         $driver = PaymentMethodDriverFactory::getDriver($data->driver);
 
         if (! in_array($data->service, array_keys($driver->services()))) {
@@ -94,6 +108,8 @@ class PaymentMethodService
             'name' => $data->name,
             'driver' => strtolower($data->driver),
             'service' => $data->service,
+            'payment_fee_type' => $data->payment_fee_type,
+            'payment_fee' => $data->payment_fee,
             'type' => $data->type,
             'is_active' => true,
             'meta' => $data->meta,
@@ -120,6 +136,19 @@ class PaymentMethodService
             throw new \InvalidArgumentException('Invalid type');
         }
 
+        if(! in_array($data->payment_fee_type, array_keys(PaymentMethodFeeTypeEnum::toArray()))){
+            throw new \InvalidArgumentException('Invalid fee type');
+        }
+
+        if($data->payment_fee < 0)
+        {
+            throw new \InvalidArgumentException('Unable to fill fee lower than 0');
+        }
+
+        if($data->payment_fee_type == PaymentMethodFeeTypeEnum::Percent->value && $data->payment_fee > 100) {
+            throw new \InvalidArgumentException('Unable to fill fee greater than 100% for type percent');
+        }
+
         $driver = PaymentMethodDriverFactory::getDriver($data->driver);
 
         if (! in_array($data->service, array_keys($driver->services()))) {
@@ -132,6 +161,8 @@ class PaymentMethodService
             'name' => $data->name,
             'driver' => strtolower($data->driver),
             'service' => $data->service,
+            'payment_fee_type' => $data->payment_fee_type,
+            'payment_fee' => $data->payment_fee,
             'type' => $data->type,
             'meta' => $data->meta,
         ]);
