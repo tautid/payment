@@ -130,9 +130,9 @@ class BayarindDriver extends PaymentMethodDriverAbstract
         app(PaymentService::class)->updatePaymentResponse($data->id, $response->collect()->toArray());
 
         if ($response->json('insertStatus') != '00') {
-            \Illuminate\Support\Facades\Log::error("Response from bayarind",[
+            \Illuminate\Support\Facades\Log::error('Response from bayarind', [
                 'payload' => $payload,
-                'response' => $response->collect()->toArray()
+                'response' => $response->collect()->toArray(),
             ]);
             throw new \Exception($response->json('insertMessage'));
         }
