@@ -11,12 +11,14 @@ class ImageHelper
     {
         try {
             $image_info = getimagesize($image_path);
-            if (!$image_info) return null;
+            if (! $image_info) {
+                return null;
+            }
 
             $mime_type = $image_info['mime'];
 
             // Create image resource based on type
-            $image = match($mime_type) {
+            $image = match ($mime_type) {
                 'image/jpeg' => imagecreatefromjpeg($image_path),
                 'image/png' => imagecreatefrompng($image_path),
                 'image/gif' => imagecreatefromgif($image_path),
@@ -24,7 +26,9 @@ class ImageHelper
                 default => null
             };
 
-            if (!$image) return null;
+            if (! $image) {
+                return null;
+            }
 
             // Get original dimensions
             $width = imagesx($image);
@@ -64,7 +68,7 @@ class ImageHelper
             imagedestroy($image);
             imagedestroy($grayscale_image);
 
-            return 'data:image/png;base64,' . base64_encode($image_data);
+            return 'data:image/png;base64,'.base64_encode($image_data);
 
         } catch (\Exception $e) {
             return null;
@@ -77,12 +81,14 @@ class ImageHelper
     public static function convertImageToBase64(string $image_path): ?string
     {
         try {
-            if (!file_exists($image_path)) return null;
+            if (! file_exists($image_path)) {
+                return null;
+            }
 
             $image_data = file_get_contents($image_path);
             $mime_type = mime_content_type($image_path);
 
-            return 'data:' . $mime_type . ';base64,' . base64_encode($image_data);
+            return 'data:'.$mime_type.';base64,'.base64_encode($image_data);
 
         } catch (\Exception $e) {
             return null;
