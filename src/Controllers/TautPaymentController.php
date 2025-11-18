@@ -2,11 +2,12 @@
 
 namespace TautId\Payment\Controllers;
 
-use Illuminate\Contracts\View\View;
-use Illuminate\Database\RecordNotFoundException;
 use Illuminate\Routing\Controller;
+use Illuminate\Contracts\View\View;
 use TautId\Payment\Actions\BayarindAction;
 use TautId\Payment\Services\PaymentService;
+use Illuminate\Database\RecordNotFoundException;
+use TautId\Payment\Actions\MootaTransactionAction;
 
 class TautPaymentController extends Controller
 {
@@ -21,6 +22,7 @@ class TautPaymentController extends Controller
 
             $result = match ($payment->method->driver) {
                 'bayarind' => (new BayarindAction)->run($payment),
+                'moota-transaction' => (new MootaTransactionAction)->run($payment),
                 default => null
             };
 
