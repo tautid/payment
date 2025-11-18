@@ -46,7 +46,7 @@ class BayarindDriver extends PaymentMethodDriverAbstract
 
     public function isServiceRedirectType(string $service): bool
     {
-        return match(strtolower($service)) {
+        return match (strtolower($service)) {
             '1021' => false,
             '1085' => true,
             '1084' => true,
