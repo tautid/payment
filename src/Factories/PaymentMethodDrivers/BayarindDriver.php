@@ -44,6 +44,19 @@ class BayarindDriver extends PaymentMethodDriverAbstract
         return $image_filename;
     }
 
+    public function isServiceRedirectType(string $service): bool
+    {
+        return match(strtolower($service)) {
+            '1021' => false,
+            '1085' => true,
+            '1084' => true,
+            '1077' => true,
+            '1086' => true,
+            '1089' => false,
+            default => false
+        };
+    }
+
     private function getToken(): string
     {
         return config('taut-payment.bayarind_secret');

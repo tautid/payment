@@ -24,6 +24,11 @@ class OfflineDriver extends PaymentMethodDriverAbstract
         return $image_filename;
     }
 
+    public function isServiceRedirectType(string $service): bool
+    {
+        return false;
+    }
+
     public function createPayment(PaymentData $data): void
     {
         // no need to perform anything because the driver is offline

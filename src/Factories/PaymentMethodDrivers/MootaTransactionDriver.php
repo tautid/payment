@@ -62,6 +62,11 @@ class MootaTransactionDriver extends PaymentMethodDriverAbstract
         return $image_filename;
     }
 
+    public function isServiceRedirectType(string $service): bool
+    {
+        return true;
+    }
+
     public function createPayment(PaymentData $data): void
     {
         try {

@@ -37,6 +37,8 @@ abstract class PaymentMethodDriverAbstract
 
     abstract public function getServiceImageFilename(string $service): string;
 
+    abstract public function isServiceRedirectType(string $service): bool;
+
     abstract public function createPayment(PaymentData $data): void;
 
     abstract public function checkPayment(PaymentData $data): void;
