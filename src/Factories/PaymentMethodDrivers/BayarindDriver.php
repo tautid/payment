@@ -5,12 +5,11 @@ namespace TautId\Payment\Factories\PaymentMethodDrivers;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
-use TautId\Payment\Services\PaymentService;
-use TautId\Payment\Data\Payment\PaymentData;
-use TautId\Payment\Enums\PaymentMethodTypeEnum;
-use TautId\Payment\Services\PaymentMethodService;
 use Spatie\WebhookClient\Exceptions\InvalidConfig;
 use TautId\Payment\Abstracts\PaymentMethodDriverAbstract;
+use TautId\Payment\Data\Payment\PaymentData;
+use TautId\Payment\Enums\PaymentMethodTypeEnum;
+use TautId\Payment\Services\PaymentService;
 
 class BayarindDriver extends PaymentMethodDriverAbstract
 {
@@ -228,7 +227,7 @@ class BayarindDriver extends PaymentMethodDriverAbstract
 
     public function checkSignature(Request $request): bool
     {
-        try{
+        try {
             $shipping = app(PaymentService::class)->getPaymentByTrxId($request->get('transactionNo'));
 
             $secretKey = $this->getToken($shipping->method->type == PaymentMethodTypeEnum::Production->value);
@@ -254,8 +253,7 @@ class BayarindDriver extends PaymentMethodDriverAbstract
             );
 
             return hash_equals($signature, $computed_signature);
-        }catch(\Exception $e)
-        {
+        } catch (\Exception $e) {
             return false;
         }
     }
