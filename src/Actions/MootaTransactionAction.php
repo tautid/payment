@@ -10,7 +10,7 @@ class MootaTransactionAction
     public function run(PaymentData $data): View
     {
         return view('taut-payment::payment.moota-transaction.payment', [
-            'redirectUrl' => data_get($data->response,'data.payment_url'),
+            'redirectUrl' => data_get($data->response, 'data.payment_url'),
         ]);
     }
 }
