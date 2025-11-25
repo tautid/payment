@@ -5,11 +5,12 @@ namespace TautId\Payment\Factories\PaymentMethodDrivers;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
-use Spatie\WebhookClient\Exceptions\InvalidConfig;
-use TautId\Payment\Abstracts\PaymentMethodDriverAbstract;
+use TautId\Payment\Services\PaymentService;
 use TautId\Payment\Data\Payment\PaymentData;
 use TautId\Payment\Enums\PaymentMethodTypeEnum;
-use TautId\Payment\Services\PaymentService;
+use TautId\Payment\Services\PaymentMethodService;
+use Spatie\WebhookClient\Exceptions\InvalidConfig;
+use TautId\Payment\Abstracts\PaymentMethodDriverAbstract;
 
 class BayarindDriver extends PaymentMethodDriverAbstract
 {
@@ -57,9 +58,11 @@ class BayarindDriver extends PaymentMethodDriverAbstract
         };
     }
 
-    private function getToken(): string
+    private function getToken(bool $is_production = false): string
     {
-        return config('taut-payment.bayarind_secret');
+        return ($is_production)
+                ? config('taut-payment.sandbox_bayarind_secret')
+                : config('taut-payment.production_bayarind_secret');
     }
 
     private function getBaseUrl(string $endpoint, bool $is_production = false): string
@@ -101,7 +104,7 @@ class BayarindDriver extends PaymentMethodDriverAbstract
         $transactionNo = $data->trx_id;
         $transactionAmount = intval($data->total);
         $channelId = data_get($data->method->meta, 'bayarind_channel_id');
-        $secretKey = $this->getToken();
+        $secretKey = $this->getToken($data->method->type == PaymentMethodTypeEnum::Production->value);
         $authCode = hash(
             'sha256',
             $transactionNo.$transactionAmount.$channelId.$secretKey
@@ -225,28 +228,35 @@ class BayarindDriver extends PaymentMethodDriverAbstract
 
     public function checkSignature(Request $request): bool
     {
-        $secretKey = $this->getToken();
+        try{
+            $shipping = app(PaymentService::class)->getPaymentByTrxId($request->get('transactionNo'));
 
-        if (empty($secretKey)) {
-            throw InvalidConfig::signingSecretNotSet();
-        }
+            $secretKey = $this->getToken($shipping->method->type == PaymentMethodTypeEnum::Production->value);
 
-        $signature = $request->get('authCode');
-        if (empty($signature)) {
+            if (empty($secretKey)) {
+                throw InvalidConfig::signingSecretNotSet();
+            }
+
+            $signature = $request->get('authCode');
+            if (empty($signature)) {
+                return false;
+            }
+
+            $transactionNo = $request->get('transactionNo');
+            $transactionAmount = $request->get('transactionAmount');
+            $channelId = $request->get('channelId');
+            $transactionStatus = $request->get('transactionStatus');
+            $insertId = $request->get('insertId');
+
+            $computed_signature = hash(
+                'sha256',
+                $transactionNo.$transactionAmount.$channelId.$transactionStatus.$insertId.$secretKey
+            );
+
+            return hash_equals($signature, $computed_signature);
+        }catch(\Exception $e)
+        {
             return false;
         }
-
-        $transactionNo = $request->get('transactionNo');
-        $transactionAmount = $request->get('transactionAmount');
-        $channelId = $request->get('channelId');
-        $transactionStatus = $request->get('transactionStatus');
-        $insertId = $request->get('insertId');
-
-        $computed_signature = hash(
-            'sha256',
-            $transactionNo.$transactionAmount.$channelId.$transactionStatus.$insertId.$secretKey
-        );
-
-        return hash_equals($signature, $computed_signature);
     }
 }

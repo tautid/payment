@@ -35,18 +35,31 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Credentials
+    | Sandbox Credentials
     |--------------------------------------------------------------------------
     |
-    | All required credentials
+    | All required sandbox credentials
+    |
+    | note: replace using env() for safety
+    */
+
+    'sandbox_bayarind_secret' => null,
+    'sandbox_bayarind_company_id' => null,
+
+     /*
+    |--------------------------------------------------------------------------
+    | Production Credentials
+    |--------------------------------------------------------------------------
+    |
+    | All required production credentials
     |
     | note: replace using env() for safety
     */
 
     'moota_transaction_api_token' => null,
     'moota_transaction_webhook_secret' => null,
-    'bayarind_secret' => null,
-    'bayarind_company_id' => null,
+    'production_bayarind_secret' => null,
+    'production_bayarind_company_id' => null,
 
     /*
     |--------------------------------------------------------------------------
