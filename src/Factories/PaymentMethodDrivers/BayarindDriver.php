@@ -233,9 +233,9 @@ class BayarindDriver extends PaymentMethodDriverAbstract
     public function checkSignature(Request $request): bool
     {
         try {
-            $shipping = app(PaymentService::class)->getPaymentByTrxId($request->get('transactionNo'));
+            $payment = app(PaymentService::class)->getPaymentByTrxId($request->get('transactionNo'));
 
-            $secretKey = $this->getToken($shipping->method->type == PaymentMethodTypeEnum::Production->value);
+            $secretKey = $this->getToken($payment->method->type == PaymentMethodTypeEnum::Production->value);
 
             if (empty($secretKey)) {
                 throw InvalidConfig::signingSecretNotSet();
