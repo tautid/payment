@@ -142,7 +142,7 @@ class BayarindDriver extends PaymentMethodDriverAbstract
         $response = Http::asForm()->post(
             $this->getBaseUrl(
                 endpoint: '',
-                is_production: $data->method->type == PaymentMethodTypeEnum::Production->value
+                is_production: $is_production
             ), $payload);
 
         app(PaymentService::class)->updatePaymentPayload($data->id, $payload);
@@ -150,6 +150,7 @@ class BayarindDriver extends PaymentMethodDriverAbstract
 
         if ($response->json('insertStatus') != '00') {
             \Illuminate\Support\Facades\Log::error('Response from bayarind', [
+                'endpoint' => $this->getBaseUrl(endpoint: '',is_production: $is_production),
                 'payload' => $payload,
                 'response' => $response->collect()->toArray(),
             ]);
