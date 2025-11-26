@@ -71,16 +71,18 @@ class BayarindDriver extends PaymentMethodDriverAbstract
         return "{$base_url}{$endpoint}";
     }
 
-    private function getCompanyId(): string
+    private function getCompanyId(bool $is_production = false): string
     {
-        return config('taut-payment.bayarind_company_id');
+        return ($is_production)
+                    ? config('taut-payment.production_bayarind_company_id')
+                    : config('taut-payment.sandbox_bayarind_company_id');
     }
 
-    private function getCustomerAccount(int $number): string
+    private function getCustomerAccount(int $number, bool $is_production = false): string
     {
         $number = (($number) ? substr($number, 2) : mt_rand(10000000000, 99999999999));
 
-        return $this->getCompanyId().$number;
+        return $this->getCompanyId($is_production).$number;
     }
 
     private function getRedirectUrl(PaymentData $data): string
@@ -100,10 +102,12 @@ class BayarindDriver extends PaymentMethodDriverAbstract
 
     public function createPayment(PaymentData $data): void
     {
+        $is_production = $data->method->type == PaymentMethodTypeEnum::Production->value;
+
         $transactionNo = $data->trx_id;
         $transactionAmount = intval($data->total);
         $channelId = data_get($data->method->meta, 'bayarind_channel_id');
-        $secretKey = $this->getToken($data->method->type == PaymentMethodTypeEnum::Production->value);
+        $secretKey = $this->getToken($is_production);
         $authCode = hash(
             'sha256',
             $transactionNo.$transactionAmount.$channelId.$secretKey
@@ -119,7 +123,7 @@ class BayarindDriver extends PaymentMethodDriverAbstract
             'transactionDate' => $data->created_at->format('Y-m-d H:i:s'),
             'transactionExpire' => $data->due_at->format('Y-m-d H:i:s'), // in GMT +7
             'description' => "Payment {$data->trx_id}",
-            'customerAccount' => $this->getCustomerAccount($data->customer_phone), // BCAVA
+            'customerAccount' => $this->getCustomerAccount($data->customer_phone, $is_production), // BCAVA
             'customerName' => $data->customer_name,
             'callbackURL' => $this->getRedirectUrl($data),
         ];
