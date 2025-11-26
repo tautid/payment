@@ -60,8 +60,8 @@ class BayarindDriver extends PaymentMethodDriverAbstract
     private function getToken(bool $is_production = false): string
     {
         return ($is_production)
-                ? config('taut-payment.sandbox_bayarind_secret')
-                : config('taut-payment.production_bayarind_secret');
+                ? config('taut-payment.production_bayarind_secret')
+                : config('taut-payment.sandbox_bayarind_secret');
     }
 
     private function getBaseUrl(string $endpoint, bool $is_production = false): string
