@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('service');
             $table->string('type');
             $table->string('payment_fee_type')->default('fixed');
-            $table->string('payment_fee')->default(0);
+            $table->double('payment_fee')->default(0);
             $table->boolean('is_active');
 
             $table->json('meta')->nullable();
@@ -37,7 +37,7 @@ return new class extends Migration
             $table->string('customer_phone')->nullable();
             $table->string('status');
             $table->double('amount')->default(0);
-            $table->double('payment_fee_type')->default('fixed');
+            $table->string('payment_fee_type')->default('fixed');
             $table->double('payment_fee')->default(0);
             $table->double('total')->default(0);
 
