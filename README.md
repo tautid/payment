@@ -31,12 +31,6 @@ Publish the seeder file (optional):
 php artisan vendor:publish --tag="taut-payment-seeders"
 ```
 
-Publish the webhook client migrations:
-
-```bash
-php artisan vendor:publish --provider="Spatie\WebhookClient\WebhookClientServiceProvider" --tag="webhook-client-migrations"
-```
-
 Publish the payment migrations:
 
 ```bash
