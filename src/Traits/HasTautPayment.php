@@ -2,9 +2,9 @@
 
 namespace TautId\Payment\Traits;
 
-use TautId\Payment\Models\Payment;
-use TautId\Payment\Enums\PaymentStatusEnum;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use TautId\Payment\Enums\PaymentStatusEnum;
+use TautId\Payment\Models\Payment;
 
 trait HasTautPaymentTrait
 {
