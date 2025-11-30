@@ -75,7 +75,7 @@ class PaymentMethodService
     {
         return new DataCollection(
             PaymentMethodData::class,
-            PaymentMethod::where('is_active',true)->get()->map(fn($item) => PaymentMethodData::from($item))
+            PaymentMethod::where('is_active', true)->get()->map(fn ($item) => PaymentMethodData::from($item))
         );
     }
 
