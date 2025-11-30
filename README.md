@@ -288,6 +288,9 @@ $filterData = FilterPaginationData::from([
 ]);
 $paginatedMethods = $methodService->getPaginatePaymentMethods($filterData);
 
+// Get available payment methods
+$availableMethods = $methodService->getAllAvailablePaymentMethods();
+
 // Get specific payment method
 $method = $methodService->getPaymentMethodById('1');
 $bayarindMethods = $methodService->getPaymentMethodByDriver('bayarind');

@@ -71,6 +71,14 @@ class PaymentMethodService
         return $driver->services();
     }
 
+    public function getAllAvailablePaymentMethods(): DataCollection
+    {
+        return new DataCollection(
+            PaymentMethodData::class,
+            PaymentMethod::where('is_active',true)->get()->map(fn($item) => PaymentMethodData::from($item))
+        );
+    }
+
     public function createPaymentMethod(CreatePaymentMethodData $data): PaymentMethodData
     {
         $drivers = PaymentMethodDriverFactory::getOptions();
