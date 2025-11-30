@@ -8,13 +8,13 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 trait HasTautPayment
 {
-    public function tautPayments() : MorphMany
+    public function tautPayments(): MorphMany
     {
-        return $this->morphMany(Payment::class,'source');
+        return $this->morphMany(Payment::class, 'source');
     }
 
     public function pendingPayment()
     {
-        return $this->tautPayments()->where('status',PaymentStatusEnum::Pending->value)->first();
+        return $this->tautPayments()->where('status', PaymentStatusEnum::Pending->value)->first();
     }
 }
