@@ -6,7 +6,7 @@ use TautId\Payment\Models\Payment;
 use TautId\Payment\Enums\PaymentStatusEnum;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 
-trait HasTautPayment
+trait HasTautPaymentTrait
 {
     public function tautPayments(): MorphMany
     {
@@ -15,6 +15,6 @@ trait HasTautPayment
 
     public function pendingPayment()
     {
-        return $this->tautPayments()->where('status', PaymentStatusEnum::Pending->value)->first();
+        return $this->tautPayments->where('status', PaymentStatusEnum::Pending->value)->first();
     }
 }
