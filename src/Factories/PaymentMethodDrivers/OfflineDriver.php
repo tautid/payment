@@ -3,9 +3,8 @@
 namespace TautId\Payment\Factories\PaymentMethodDrivers;
 
 use Illuminate\Http\Request;
-use TautId\Payment\Services\PaymentService;
-use TautId\Payment\Data\Payment\PaymentData;
 use TautId\Payment\Abstracts\PaymentMethodDriverAbstract;
+use TautId\Payment\Data\Payment\PaymentData;
 
 class OfflineDriver extends PaymentMethodDriverAbstract
 {
@@ -32,7 +31,7 @@ class OfflineDriver extends PaymentMethodDriverAbstract
 
     public function createPayment(PaymentData $data): void
     {
-        app(PaymentService::class)->changePaymentToCompleted($data->id);
+        // no need to perform anything because the driver is offline
     }
 
     public function checkPayment(PaymentData $data): void
