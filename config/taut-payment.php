@@ -79,5 +79,5 @@ return [
 
     'redirect_url' => null,
     'moota_callback_endpoint' => 'moota/taut-callback',
-    'bayarind_callback_endpoint' => 'bayarind/taut-callback'
+    'bayarind_callback_endpoint' => 'bayarind/taut-callback',
 ];
