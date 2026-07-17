@@ -22,7 +22,7 @@ class TautPaymentServiceProvider extends PackageServiceProvider
             ->hasConfigFile()
             ->hasViews()
             ->hasRoute('web')
-            ->hasMigration('create_taut_payments_table')
+            ->hasMigrations(['create_taut_payments_table','add_redirect_url_to_taut_payments_table'])
             ->hasCommand(PaymentDueCommand::class)
             ->hasCommand(MakeTransitionsCommand::class);
     }
