@@ -27,7 +27,8 @@ class PaymentData extends Data
         public Carbon $date,
         public Carbon $due_at,
         public ?Carbon $completed_at,
-        public Carbon $created_at
+        public Carbon $created_at,
+        public ?string $redirect_url
     ) {}
 
     public static function fromModel(Payment $record): self
@@ -49,7 +50,8 @@ class PaymentData extends Data
             date: $record->date,
             due_at: $record->due_at,
             completed_at: $record->completed_at,
-            created_at: $record->created_at
+            created_at: $record->created_at,
+            redirect_url: $record->redirect_url
         );
     }
 }

@@ -87,6 +87,7 @@ class PaymentService
             'total' => $data->amount + $fee,
             'date' => $data->date,
             'due_at' => $data->due_at,
+            'redirect_url' => $data->redirect_url,
         ]);
 
         $record->update(['status' => PaymentStatusEnum::Pending->value]);

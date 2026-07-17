@@ -16,6 +16,7 @@ class CreatePaymentData extends Data
         public ?string $customer_phone,
         public float $amount,
         public Carbon $date,
-        public Carbon $due_at
+        public Carbon $due_at,
+        public ?string $redirect_url
     ) {}
 }

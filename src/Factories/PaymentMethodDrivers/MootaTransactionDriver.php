@@ -92,7 +92,7 @@ class MootaTransactionDriver extends PaymentMethodDriverAbstract
                 ],
                 'description' => null,
                 'note' => null,
-                'redirect_url' => null,
+                'redirect_url' => $data->redirect_url,
                 'expired_in_minutes' => now()->diffInMinutes($data->due_at),
                 'total' => $data->total,
             ];
