@@ -9,7 +9,7 @@ return new class extends Migration
     public function up()
     {
         Schema::table('taut_payments', function (Blueprint $table) {
-            $table->string('redirect_url')->nullable()->after('is_active');
+            $table->string('redirect_url')->nullable()->after('response');
         });
     }
 
